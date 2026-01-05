@@ -1,0 +1,83 @@
+@model List<Notification>
+
+@foreach (var notification in Model)
+{
+    TimeSpan timeSinceNotification = DateTime.UtcNow.Subtract(notification.CreatedAt);
+    string displayTime = timeSinceNotification switch
+    {
+        var t when t.TotalDays >= 365 => $"{(int)(t.TotalDays / 365)}y ago",
+        var t when t.TotalDays >= 30 => $"{(int)(t.TotalDays / 30)}mo ago",
+        var t when t.TotalDays >= 1 => $"{(int)t.TotalDays}d ago",
+        var t when t.TotalHours >= 1 => $"{(int)t.TotalHours}h ago",
+        var t when t.TotalMinutes >= 1 => $"{(int)t.TotalMinutes}m ago",
+        _ => "Just now"
+    };
+    
+    string iconName = notification.Type switch
+    {
+        NotificationType.Like => "heart",
+        NotificationType.Comment => "chatbubbles",
+        NotificationType.Bookmark => "bookmark",
+        NotificationType.Follow => "person-add",
+        _ => "notifications"
+    };
+    string iconColor = notification.Type switch
+    {
+        NotificationType.Like => "#df4444",
+        NotificationType.Comment => "#2222e4",
+        NotificationType.Bookmark => "#40826d",
+        NotificationType.Follow => "#00af00",
+        _ => "gray"
+    };
+    <div class="relative flex items-center gap-3 p-2 duration-200 rounded-xl pr-10 custom-bg-dark w-full @(notification.IsRead ? "" : "bg-slate-700")">
+        <div class="flex items-center gap-2 flex-1 w-full">
+            <ion-icon name="@iconName" class="text-2xl shrink-0" style="color:@iconColor"></ion-icon>
+            <a asp-controller="User" asp-action="Details" asp-route-userId="@notification.SenderId" class="w-9 h-9 overflow-hidden rounded-full flex items-center justify-center shrink-0">
+                <img src="@notification.UserProfileImageUrl" class="w-full h-full object-cover rounded-full shadow"/>
+            </a>
+            @if (notification.PostId.HasValue)
+            {
+                <a asp-controller="Home" asp-action="Details" asp-route-postId="@notification.PostId">
+                    <p>
+                        @if (notification.IsRead)
+                        {
+                            @notification.Message
+                        }
+                        else
+                        {
+                            <b class="font-bold mr-1 white w-full">
+                                @notification.Message
+                            </b>
+                        }
+                   
+                    </p>
+                </a>
+            }
+            else
+            {
+                <a asp-controller="User" asp-action="Details" asp-route-userId="@notification.SenderId">
+                    <p>
+                        @if (notification.IsRead)
+                        {
+                            @notification.Message
+                        }
+                        else
+                        {
+                            <b class="font-bold mr-1 white w-full">
+                                @notification.Message
+                            </b>
+                        }
+                   
+                    </p>
+                </a>
+            }
+           
+            <div class="text-sx text-gray-400 absolute bottom-0 right-1" title="@notification.CreatedAt.ToLocalTime().ToString("HH:mm dd-MM-yyyy")">@displayTime</div>
+
+            @if (notification.IsRead == false)
+            {
+                <div class="w-2.5 h-2.5 bg-red-600 rounded-full absolute right-3 top-5 cursor-pointer" onclick="setAsRead(@notification.Id)"></div>
+            }
+        </div>
+    </div>
+}

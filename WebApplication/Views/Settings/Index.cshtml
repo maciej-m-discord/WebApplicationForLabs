@@ -1,0 +1,167 @@
+@model User;
+<main id="site__main" class="2xl:ml-[--w-side] xl:ml-[--w-side-sm] p-2.5 h-[calc(100vh-var(--m-top))] mt-[--m-top] ">
+    <div class="max-w-3xl mx-auto">
+        <div class="box relative shadow-md rounded-lg bg-slate-800">
+            @* Profile Picture and Name *@
+            <div class="flex items-center justify-between p-6 pb-4">
+                <form id="UpdateProfilePictureForm" class="flex items-center gap-4 w-full" asp-controller="Settings" asp-action="UpdateProfilePicture" enctype="multipart/form-data">
+                    <div class="relative w-12 h-12 shrink-0">
+                        <label for="imageUpload" class="cursor-pointer">
+                            <img id="imagePreview" src="@(!string.IsNullOrEmpty(Model.ProfilePictureUrl) ? Model.ProfilePictureUrl : Url.Content("~/images/avatar/user.png"))" class="object-cover w-full h-full rounded-full" alt="Profile picture placeholder"/>
+                        </label>
+                        <input type="file" id="imageUpload" name="ProfilePictureImage" class="hidden" accept="image/png, image/jpeg"/>
+                        <label for="imageUpload" class="p-0.5 rounded-full bg-slate-800 custom-border-color absolute -bottom-2 -right-2 cursor-pointer">
+                            <svg width="15px" height="15px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M22 11.5V14.6C22 16.8402 22 17.9603 21.564 18.816C21.1805 19.5686 20.5686 20.1805 19.816 20.564C18.9603 21 17.8402 21 15.6 21H8.4C6.15979 21 5.03969 21 4.18404 20.564C3.43139 20.1805 2.81947 19.5686 2.43597 18.816C2 17.9603 2 16.8402 2 14.6V9.4C2 7.15979 2 6.03969 2.43597 5.18404C2.81947 4.43139 3.43139 3.81947 4.18404 3.43597C5.03969 3 6.15979 3 8.4 3H12.5M19 8V2M16 5H22M16 12C16 14.2091 14.2091 16 12 16C9.79086 16 8 14.2091 8 12C8 9.79086 9.79086 8 12 8C14.2091 8 16 9.79086 16 12Z" stroke="#4444ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </label>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-semibold text-white" style="color: white!important;">@Model.FullName</h3>
+                        <p class="text-sm text-blue-600 mt-1 font-normal">@Model.UserName</p>
+                    </div>
+
+                    <button type="submit" id="saveButton" class="hidden button bg-slate-700 text-white px-4 py-1 rounded ml-auto custom-bg-dark">
+                        Save
+                    </button>
+                </form>
+
+            </div>
+
+            
+            <div class="relative border-b custom-border-color">
+                <nav class="nav__underline px-6 p-0 border-transparent -mb-px">
+                    <ul class="uk-slider-items w-[calc(100%+10px)] !overflow-hidden" uk-switcher="connect: #setting-tab; animation: uk-animation-slide-right-medium, uk-animation-slide-left-medium">
+                        <li class="w-auto pr-2.5" style="color: #888888!important;"><a href="#">Update profile</a></li>
+                        <li class="w-auto pr-2.5" style="color: #888888!important;"><a href="# ">Update password</a></li>
+                    </ul>
+                </nav>
+            </div>
+            <div id="setting-tab" class="uk-switcher py-12 px-20 overflow-hidden text-white text-sm">
+                <div>
+                    <form asp-controller="Authentication" asp-action="UpdateProfile">
+                        <div class="space-y-6">
+                            
+                            @if (TempData["UserProfileError"] != null)
+                            {
+                                <div class="mb-4 text-red-500 ">
+                                    <p>@TempData["UserProfileError"]</p>
+                                </div>
+                            }
+                            <div class="flex items-center gap-10">
+                                <label class="w-32 text-right" style="color: white!important;">Full name</label>
+                                <div class="flex-1">
+                                    <input value="@Model.FullName" type="text" name="fullName" placeholder="Enter your full name" class="w-full bg-viridian"/>
+                                    
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-10">
+                                <label class="w-32 text-right" style="color: white!important;">User name</label>
+                                <div class="flex-1">
+                                    <input value="@Model.UserName" type="text" name="username" placeholder="Enter your username" class="w-full bg-viridian"/>
+                                </div>
+                            </div>
+                            @* <div class="flex items-center gap-10"> *@
+                            @*     <label class="w-32 text-right" style="color: white!important;">Email</label> *@
+                            @*     <div class="flex-1"> *@
+                            @*         <input type="email" name="emailAddress" placeholder="Enter your email adress" value="" class="w-full bg-viridian"/> *@
+                            @*     </div> *@
+                            @* </div> *@
+                            <div class="flex items-center gap-10">
+                                <label class="w-32 text-right" style="color: white!important;">Bio</label>
+                                <div class="flex-1">
+                                    <textarea class="w-full bg-viridian" name="bio" rows="5" placeholder="Enter your bio">@Model.Bio</textarea>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4 mt-16 lg:pl-[10.5rem]">
+                                <button class="button px-6 bg-slate-700 custom-border-color" style="color: white!important;">Cancel</button>
+                                <button type="submit" class="button px-10 bg-slate-700 custom-border-color" style="color: white!important;">Save</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div>
+                    <form asp-controller="Authentication" asp-action="UpdatePassword">
+                        <div class="space-y-6">
+                            @if (TempData["PasswordError"] != null)
+                            {
+                                <div class="mb-4 text-red-500 ">
+                                    <p>@TempData["PasswordError"]</p>
+                                </div>
+                            }
+                            @if (TempData["PasswordSuccess"] != null)
+                            {
+                                <div class="mb-4 text-green-500 ">
+                                    <p>@TempData["PasswordSuccess"]</p>
+                                </div>
+                            }
+                            <div class="flex items-center gap-10">
+                                <label class="w-32 text-right" style="color: white!important;">Current password</label>
+                                <div class="flex-1">
+                                    <input type="password" name="currentPassword" placeholder="Enter your current password" class="w-full bg-viridian"/>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-10">
+                                <label class="w-32 text-right" style="color: white!important;">New password</label>
+                                <div class="flex-1">
+                                    <input type="password" name="newPassword" placeholder="Enter your new password" value="" class="w-full bg-viridian"/>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-10">
+                                <label class="w-32 text-right" style="color: white!important;">Confirm password</label>
+                                <div class="flex-1">
+                                    <input type="password" name="confirmPassword" placeholder="Confirm your new password" value="" class="w-full bg-viridian"/>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4 mt-16 lg:pl-[10.5rem]">
+                                <button class="button px-6 bg-slate-700 custom-border-color" style="color: white!important;">Cancel</button>
+                                <button type="submit" class="button px-10 bg-slate-700 custom-border-color" style="color: white!important;">Save</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</main>
+
+<partial name="Modals/_CreateStory" model="new StoryVM()"/>
+<partial name="Modals/_CreateStatus" model="new PostVM()"/>
+
+<script>
+    
+    const imageUpload = document.getElementById('imageUpload');
+    const imagePreview = document.getElementById('imagePreview');
+    const saveButton = document.getElementById('saveButton');
+
+    imageUpload.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e)=> {
+                imagePreview.src = e.target.result;
+                saveButton.classList.remove('hidden');
+            }
+            reader.readAsDataURL(file);
+        } else{
+            saveButton.classList.add('hidden');
+        }
+    });
+
+    @* document.getElementById('UpdateProfilePictureForm').addEventListener('submit', function(e) { *@
+    @*     e.preventDefault(); *@
+    @*     // Implement the logic to upload the image to the server here. *@
+    @*     // After successful upload, hide the save button again. *@
+    @*     saveButton.classList.add('hidden'); *@
+    @* }); *@
+    
+    document.addEventListener('DOMContentLoaded', () => {
+        const switcher = UIkit.switcher(document.querySelector('[uk-switcher]'));
+        if('@TempData["ActiveTab"]' === 'Password') {
+            switcher.show(1);
+        } else {
+            switcher.show(0);
+        }
+    });
+</script>

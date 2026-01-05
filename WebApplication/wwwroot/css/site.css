@@ -1,31 +1,194 @@
-html {
-  font-size: 14px;
-}
-
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
-
 body {
-  margin-bottom: 60px;
+    margin-bottom:60px;
+    background-color: #181c1b !important;
+    border-color:#172030 !important;
+}
+html {
+    font-size: 14px;
+    position: relative;
+    min-height: 100%;
+    color: #FFFFFF;
+    background-color: #181c1b !important;
+    border-color:#172030 !important;
+}
+.white {
+    color: #FFFFFF !important;
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+.photo-overlay {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: #9F3;
+    background-size: cover;
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+.close-photo-overlay {
+    font-size: 30px;
+    position: absolute;
+    right: 50px;
+    top: 50px;
+    color: #fff;
+    z-index: 2;
+    padding: 6px 9px;
+    border: 1px solid #fff;
+}
+
+.imgBox {
+    width: 20%;
+    margin: 0 auto;
+}
+
+form > button.icon-link, button.delete-post-btn {
+    padding: 8px 10px;
+    display: flex;
+    align-items: center;
+    text-decoration:none;
+    cursor:pointer;
+    border:none;
+    background:none;
+    width:100%;
+}
+form > button.icon-link > ion-icon, button.delete-post-btn > ion-icon {
+    margin-right:8px;
+}
+
+.bg-viridian {
+    background-color: #40826d !important;
+}
+
+.custom-bg-dark:hover {
+    background-color: #0f2b22 !important;
+}
+
+.post-highlight:hover{
+    background-color: #2a5749 !important;
+}
+
+.custom-border-color {
+    border-color: rgba(64, 130, 109, 0.5) !important;
+}
+
+.inherit-bg-color::after {
+    background:inherit!important;
+}
+
+.custom-change-color:hover {
+    color: #ff0000!important;
+}
+
+.custom-hover-blue:hover{
+    color: #3b82f6 !important;
+}
+
+/*------------------------------------------------------------*/
+.bg-slate-100 {
+    --tw-bg-opacity: 1;
+    background-color: rgb(241 245 249 / var(--tw-bg-opacity));
+}
+
+.bg-slate-100\/40 {
+    background-color: rgb(241 245 249 / 0.4);
+}
+
+.bg-slate-100\/60 {
+    background-color: rgb(241 245 249 / 0.6);
+}
+
+.bg-slate-200 {
+    --tw-bg-opacity: 1;
+    background-color: rgb(226 232 240 / var(--tw-bg-opacity));
+}
+
+.bg-slate-200\/40 {
+    background-color: rgb(226 232 240 / 0.4);
+}
+
+.bg-slate-200\/50 {
+    background-color: rgb(226 232 240 / 0.5);
+}
+
+.bg-slate-200\/60 {
+    background-color: rgb(226 232 240 / 0.6);
+}
+
+.bg-slate-200\/70 {
+    background-color: rgba(44, 74, 66, 0.3);
+}
+
+.bg-slate-300\/10 {
+    background-color: rgb(203 213 225 / 0.1);
+}
+
+.bg-slate-300\/20 {
+    background-color: rgb(203 213 225 / 0.2);
+}
+
+.bg-slate-50 {
+    --tw-bg-opacity: 1;
+    background-color: rgb(248 250 252 / var(--tw-bg-opacity));
+}
+
+.bg-slate-600 {
+    --tw-bg-opacity: 1;
+    background-color: rgb(71 85 105 / var(--tw-bg-opacity));
+}
+
+.bg-slate-700 {
+    background-color: #2a5749;
+}
+
+.bg-slate-700\/20 {
+    background-color: rgba(79, 99, 89, 0.2);
+}
+
+.bg-slate-800 {
+    background-color: #18322a;
+}
+
+.bg-slate-800\/50 {
+    background-color: rgb(30 41 59 / 0.5);
+}
+
+.bg-slate-900 {
+    background-color: #10221d;
+}
+
+.border-slate-100 {
+    --tw-border-opacity: 1;
+    border-color: rgb(241 245 249 / var(--tw-border-opacity));
+}
+
+.border-slate-200 {
+    --tw-border-opacity: 1;
+    border-color: rgb(226 232 240 / var(--tw-border-opacity));
+}
+
+.border-slate-200\/60 {
+    border-color: rgb(226 232 240 / 0.6);
+}
+
+.border-slate-300 {
+    --tw-border-opacity: 1;
+    border-color: rgb(203 213 225 / var(--tw-border-opacity));
+}
+
+.border-slate-700 {
+    --tw-border-opacity: 1;
+    border-color: rgb(51 65 85 / var(--tw-border-opacity));
+}
+
+.border-slate-700\/60 {
+    border-color: rgb(51 65 85 / 0.6);
+}
+
+.border-slate-700\/80 {
+    border-color: rgb(51 65 85 / 0.8);
+}
+
+.border-slate-800 {
+    --tw-border-opacity: 1;
+    border-color: rgb(30 41 59 / var(--tw-border-opacity));
 }

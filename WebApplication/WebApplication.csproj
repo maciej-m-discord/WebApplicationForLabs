@@ -6,4 +6,39 @@
         <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
 
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="wwwroot\assets\images\favicon.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\assets\images\icons\group-2.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\assets\images\icons\home.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\assets\images\icons\page.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\assets\images\icons\video.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\assets\images\logo.png" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Pages\" />
+      <Folder Include="wwwroot\images\avatar\" />
+      <Folder Include="wwwroot\images\placeholders\" />
+      <Folder Include="wwwroot\images\welcome\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="AspNet.Security.OAuth.GitHub" Version="10.0.0" />
+      <PackageReference Include="Azure.Storage.Blobs" Version="12.26.0" />
+      <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="10.0.1" />
+      <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.2.0" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.1" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.1" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.1" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.1">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+      <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="10.0.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\WebApplication.Data\WebApplication.Data.csproj" />
+    </ItemGroup>
+
 </Project>

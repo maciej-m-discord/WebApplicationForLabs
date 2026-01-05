@@ -1,0 +1,27 @@
+@model List<UserWithFollowerCountVm> 
+<div class="flex items-baseline justify-between text-black" style="padding-bottom:12px;">
+    <h3 class="text-bold text-base" style="color:white!important;">Recommended people to follow</h3>
+</div>
+<hr/>
+<div class="side-list">
+    @foreach (var user in Model)
+    {
+        <div class="side-list-item">
+            <a asp-controller="User" asp-action="Details" asp-route-userId="@user.UserId" class="overflow-hidden rounded-full relative shrink-0 flex items-center justify-center" style="width:35px;">
+                <img src="@(string.IsNullOrEmpty(user.ProfilePictureUrl) ? Url.Content("~/images/avatar/user.png") : user.ProfilePictureUrl)" class="side-list-image r overflow-hidden rounded-full relative shrink-0 flex items-center justify-center"/>
+            </a>
+            <div class="flex-1">
+                <a asp-controller="User" asp-action="Details" asp-route-userId="@user.UserId">
+                    <h4 class="side-list-title" style="color:white!important;">
+                        @user.FullName
+                    </h4>
+                </a>
+                <div class="side-list-info" style="color:#d5d5d5!important;">@user.FollowerCountDisplay</div>
+            </div>
+            <form asp-controller="Follower" asp-action="Follow" method="post">
+                <input type="hidden" value="@user.UserId" name="receiverId"/>
+                <button type="submit" class="button bg-slate-700 text-white custom-bg-dark">Follow</button>
+            </form>
+        </div>
+    }
+</div>

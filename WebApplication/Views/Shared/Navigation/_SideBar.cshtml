@@ -1,0 +1,65 @@
+<div id="site__sidebar" class="fixed top-0 left-0 z-[99] pt-[--m-top] overflow-hidden transition-transform xl:duration-500 
+max-xl:w-full max-xl:-translate-x-full bg-slate-800">
+    <div class="p-2 shadow-sm 2xl:w-72 sm:w-64 w-[80%] h-[calc(100vh-64px)] relative z-30 max-lg:border-r 
+    dark:max-xl:!bg-slate-700 dark:border-slate-700" style="height: 100vh;">
+        <div class="pr-4" data-simplebar>
+            <nav id="side">
+                <ul>
+                    <li>
+                        <a class="custom-bg-dark" asp-controller="Home" asp-action="Index">
+                            <img src="~/images/icons/home.png" class="w-6"/>
+                            <span style="color: #ffffff!important;">Feed</span>
+                        </a> 
+                    </li>
+                    <li>
+                        <a class="custom-bg-dark" asp-controller="Bookmark" asp-action="Index">
+                            <img src="~/images/icons/page.png" class="w-6"/>
+                            <span style="color: #ffffff!important;">Bookmarks</span>
+                        </a> 
+                    </li>
+                    <li>
+                        <a class="custom-bg-dark" asp-controller="Follower" asp-action="Index">
+                            <img src="~/images/icons/group-2.png" class="w-6"/>
+                            <span style="color: #ffffff!important;">Following</span>
+                        </a> 
+                    </li>
+                </ul>
+            </nav>
+            <div class="md:p-4 p-2 space-y-4 text-sm font-medium">
+                <div class="flex items-center md:gap-3 gap-1 h-full">
+                    <div class="h-full flex-1 bg-slate-100 flex justify-center custom-bg-dark shadow-sm transition-all rounded-lg cursor-pointer bg-slate-700" uk-toggle="target: #create-status">
+                        <svg style="margin-top: 7px; margin-right:6px;" fill="#ffffff" width="20px" height="20px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M22,7.24a1,1,0,0,0-.29-.71L17.47,2.29A1,1,0,0,0,16.76,2a1,1,0,0,0-.71.29L13.22,5.12h0L2.29,16.05a1,1,0,0,0-.29.71V21a1,1,0,0,0,1,1H7.24A1,1,0,0,0,8,21.71L18.87,10.78h0L21.71,8a1.19,1.19,0,0,0,.22-.33,1,1,0,0,0,0-.24.7.7,0,0,0,0-.14ZM6.83,20H4V17.17l9.93-9.93,2.83,2.83ZM18.17,8.66,15.34,5.83l1.42-1.41,2.82,2.82Z"/></svg>
+                        <div class="py-2.5 text-white" style="margin-right:15px;">
+                            New post
+                        </div>
+                    </div>
+
+                    <div class="cursor-pointer hover:bg-opacity-80 p-1 px-1.5 rounded-xl transition-all bg-teal-100/60 hover:bg-sky-100" uk-toggle="target: #create-status">
+                        <svg fill="#40826d" width="25px" height="25px" viewBox="0 0 36 36" version="1.1" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                            <title>picture-solid</title>
+                            <path d="M32,4H4A2,2,0,0,0,2,6V30a2,2,0,0,0,2,2H32a2,2,0,0,0,2-2V6A2,2,0,0,0,32,4ZM8.92,8a3,3,0,1,1-3,3A3,3,0,0,1,8.92,8ZM6,27V22.9l6-6.08a1,1,0,0,1,1.41,0L16,19.35,8.32,27Zm24,0H11.15l6.23-6.23,5.4-5.4a1,1,0,0,1,1.41,0L30,21.18Z" class="clr-i-solid clr-i-solid-path-1"></path>
+                            <rect x="0" y="0" width="36" height="36" fill-opacity="0"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <nav id="side" class="font-medium text-sm text-black border-t pt-3 mt-2">
+                <div class="px-3 pb-2 text-sm font-medium">
+                    <div class="font-bold text-xl" style="color: #ffffff!important;">Pages</div>
+                </div>
+                <ul class="mt-2 -space-y-2">
+                    <li>
+                        <a class="custom-bg-dark" asp-controller="Settings" asp-action="Index">
+                            <svg width="800px" height="800px" viewBox="0 0 24 24" id="meteor-icon-kit__solid-cog" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M16.6256 3.13179L17.6569 2.10051C18.0474 1.70998 18.6805 1.70998 19.0711 2.10051L21.8995 4.92893C22.29 5.31946 22.29 5.95262 21.8995 6.34315L20.8682 7.37443C21.1384 7.89138 21.3647 8.43488 21.5422 9H23C23.5523 9 24 9.44771 24 10V14C24 14.5523 23.5523 15 23 15H21.5422C21.3647 15.5651 21.1384 16.1086 20.8682 16.6256L21.8995 17.6569C22.29 18.0474 22.29 18.6805 21.8995 19.0711L19.0711 21.8995C18.6805 22.29 18.0474 22.29 17.6569 21.8995L16.6256 20.8682C16.1086 21.1384 15.5651 21.3647 15 21.5422V23C15 23.5523 14.5523 24 14 24H10C9.44771 24 9 23.5523 9 23V21.5422C8.43488 21.3647 7.89138 21.1384 7.37443 20.8682L6.34315 21.8995C5.95262 22.29 5.31946 22.29 4.92893 21.8995L2.10051 19.0711C1.70998 18.6805 1.70998 18.0474 2.10051 17.6569L3.13179 16.6256C2.86161 16.1086 2.6353 15.5651 2.4578 15H1C0.447715 15 0 14.5523 0 14V10C0 9.44771 0.447715 9 1 9H2.4578C2.6353 8.43488 2.86161 7.89138 3.13179 7.37443L2.10051 6.34315C1.70998 5.95262 1.70998 5.31946 2.10051 4.92893L4.92893 2.10051C5.31946 1.70998 5.95262 1.70998 6.34315 2.10051L7.37443 3.13179C7.89138 2.86161 8.43488 2.6353 9 2.4578V1C9 0.447715 9.44771 0 10 0H14C14.5523 0 15 0.447715 15 1V2.4578C15.5651 2.6353 16.1086 2.86161 16.6256 3.13179ZM12 17C9.23858 17 7 14.7614 7 12C7 9.23858 9.23858 7 12 7C14.7614 7 17 9.23858 17 12C17 14.7614 14.7614 17 12 17ZM12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" fill="#758CA3"/></svg>
+                            <span style="color: #ffffff!important;">Settings</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+    <div id="site__sidebar__overlay" class="absolute top-0 left-0 z-20 w-screen h-screen xl:hidden backdrop-blur-sm"
+         uk-toggle="target:#site__sidebar ; cls :!-translate-x-0">
+        
+    </div>
+</div>

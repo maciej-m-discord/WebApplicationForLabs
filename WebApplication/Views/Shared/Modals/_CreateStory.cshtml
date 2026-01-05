@@ -1,0 +1,62 @@
+@model StoryVM
+
+<div class="hidden lg:p-20" id="create-story" uk-modal="">
+    <div class="uk-modal-dialog tt relative overflow-hidden mx-auto bg-slate-800 p-7 shadow-xl rounded-lg w-full" style="width:60vw; max-width:1000px; max-height: 70vh; height:70vh;">
+        <div class="text-center py-3 border-b -m-7 mb-0 bg-black custom-border-color">
+            <h2 class="text-sm font-medium" style="color: white!important;">Create Story</h2>
+            <button type="button" class="button__ico absolute top-0 right-0 m-2.5 uk-modal-close">
+                <svg fill="#FFFFFF" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+                     width="25px" height="25px" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve">
+                    <polygon points="335.188,154.188 256,233.375 176.812,154.188 154.188,176.812 233.375,256 154.188,335.188 176.812,357.812 
+	                    256,278.625 335.188,357.812 357.812,335.188 278.625,256 357.812,176.812 "/>
+                    <path d="M256,0C114.609,0,0,114.609,0,256s114.609,256,256,256s256-114.609,256-256S397.391,0,256,0z M256,472
+	                    c-119.297,0-216-96.703-216-216S136.703,40,256,40s216,96.703,216,216S375.297,472,256,472z"/>
+                </svg>
+            </button>
+
+        </div>
+        <div class="space-y-5 mt-7">
+            <form asp-controller="Stories" asp-action="CreateStory" enctype="multipart/form-data">
+                <div>
+                    <div class="w-full relative border1 custom-border-color rounded-lg overflow-hidden bg-[url('../images/ad_pattern.png')] bg-repeat" style="height:55vh; max-height:100%;">
+                        <label class="flex flex-col justify-center items-center absolute -translate-x-1/2 left-1/2 bottom-0 z-10 w-full pb-6 pt-10 cursor-pointer bg-gradient-to-t from-gray-700/60">
+                            <input id="storyUpload" name="image" type="file" accept="image/png, image/jpeg" hidden/>
+                            <ion-icon name="image" class="text-3xl text-teal-600"></ion-icon>
+                            <span id="storyUploadBtn" class="text-white mt-2">Browse to upload image</span>
+                        </label>
+                        <img id="storyPreview" style="width: auto; height: auto; min-width: 100%; min-height: 100%;"/> 
+                    </div>
+                </div>
+                <div class="flex justify-between items-center pt-4">
+                    <div class="flex items-start gap-2">
+                        <ion-icon name="time-outline" class="text-3xl text-teal-600 rounded-full"></ion-icon>
+                        <p class="text-sm text-gray-500 font-medium pt-2">Your status will be available for <span style="color: #FFFFFF!important;">24 hours</span></p>
+                    </div>
+                    <button class="button bg-slate-700 text-white px-8 custom-bg-dark" type="submit">Publish</button>
+                </div>
+            </form>
+        </div>
+        <div class="text-xs text-gray-800 text-center pt-6" style="color: #dcdcdc!important;">
+            The story will be visible only to your friends.
+        </div>
+    </div>
+</div>
+<script>
+    document.getElementById('storyUploadBtn').addEventListener('click',  ()=> {
+        document.getElementById('storyUpload').click();
+    })
+    document.getElementById('storyUpload').addEventListener('change', (event)=>{
+        const file = event.target.files[0];
+        const storyPreview = document.getElementById('storyPreview');
+        
+        if(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                storyPreview.src = e.target.result.toString();
+            }
+            reader.readAsDataURL(file);
+        } else {
+            storyPreview.src = "";
+        }
+    })
+</script>

@@ -1,0 +1,405 @@
+@inject UserManager<User> UserManager
+@model Post
+@{
+    var loggedInUser = await UserManager.GetUserAsync(User);
+    var profilePictureUrl = loggedInUser?.ProfilePictureUrl;
+    int loggedInUserId = int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out int result) ? result : 0;
+    
+    TimeSpan timeSpanSincePosted = DateTime.UtcNow.Subtract(Model.CreatedAt);
+    string displayTime = "";
+    if (timeSpanSincePosted.Days >= 365)
+    {
+        displayTime = $"{timeSpanSincePosted.Days/365} y ago";
+    } 
+    else if (timeSpanSincePosted.Days >= 30)
+    {
+        displayTime = $"{timeSpanSincePosted.Days/30} m ago";
+    }
+    else if (timeSpanSincePosted.TotalDays >= 1)
+    {
+        displayTime = $"{timeSpanSincePosted.Days} d ago";
+    }
+    else if (timeSpanSincePosted.TotalHours >= 1)
+    {
+        displayTime = $"{timeSpanSincePosted.Hours} h ago";
+    } 
+    else if (timeSpanSincePosted.TotalMinutes >= 1)
+    {
+        displayTime = $"{timeSpanSincePosted.Minutes} m ago";
+    }
+    else
+    {
+        displayTime = $"Just now";
+    }
+
+    bool showAllComments = ViewData["ShowAllComment"] as bool? ?? false;
+    bool showDetails = ViewData["ShowDetails"] as bool? ?? true;
+}
+<div id="post-@Model.Id" class="rounded-xl shadow-sm text-sm font-medium bg-slate-800" style="outline:2px solid!important; outline-color:rgb(49,101,84) !important; ">
+    @* Post heading *@
+    <div class="flex gap-3 sm:p-4 p-2.5 text-sm font-medium rounded-xl">
+        <a asp-controller="User" asp-action="Details" asp-route-userId="@Model.UserId" class="w-9 h-9 overflow-hidden rounded-full flex items-center justify-center">
+            <img src="@(string.IsNullOrEmpty(Model.User.ProfilePictureUrl) ? Url.Content("~/images/avatar/user.png") : Url.Content(Model.User.ProfilePictureUrl))" class="w-full h-full object-cover rounded-full shadow"/>
+        </a>
+        <div class="flex-1">
+            <a asp-controller="User" asp-action="Details" asp-route-userId="@Model.UserId">
+                <h4 style="color:#FFFFFF!important;">@Model.User.FullName</h4>
+                <div class="text-xs text-gray-400" title="@Model.CreatedAt.ToLocalTime().ToString("HH:mm dd-MM-yyyy")">@displayTime</div>
+            </a>
+        </div>
+        <div class="-mr-1">
+            <button type="button" class="w-8 h-8 button-icon custom-bg-dark">
+                <ion-icon class="text-xl" style="color:#ffffff!important;" name="ellipsis-horizontal"></ion-icon>
+            </button>
+            <div class="w-[245px] post-options-dropdown bg-slate-800 border1 custom-border-color" uk-dropdown="pos: bottom-right; animation: uk-animation-scale-up uk-transform-origin-top-right; animate-out:true; mode:click">
+                <form asp-controller="Home" asp-action="AddPostReport">
+                    <input type="hidden" name="postId" value="@Model.Id"/>
+                    <button type="@(Model.Reports.Any(n => n.UserId == loggedInUserId)? "button" : "submit")" class="icon-link @(Model.Reports.Any(n => n.UserId == loggedInUserId)? "" : "custom-bg-dark") rounded-[20px]" style="color:@(Model.Reports.Any(n => n.UserId == loggedInUserId)? "#ff0000" : "#ffffff")!important;">
+                        <ion-icon class="text-xl shrink-0" name="@(Model.Reports.Any(n => n.UserId == loggedInUserId)? "flag" : "flag-outline")" style="color:@(Model.Reports.Any(n => n.UserId == loggedInUserId)? "#ff0000" : "#ffffff")!important;"></ion-icon> @(Model.Reports.Any(n => n.UserId == loggedInUserId)? "Post reported" : "Report")
+                    </button>
+                </form>
+                <hr />
+                
+                @if (Model.UserId == loggedInUserId || User.IsInRole(AppRoles.Admin))
+                {
+                    <form asp-controller="Home" asp-action="TogglePostVisibility">
+                        <input type="hidden" name="postId" value="@Model.Id"/>
+                        <button type="submit" class="icon-link custom-bg-dark rounded-[20px]" style="color: #ffffff!important;">
+                            <ion-icon class="text-xl" name="@(Model.IsPrivate?"lock-closed" : "lock-closed-outline")" style="color: @(Model.IsPrivate?"#ff0000" : "#ffffff")!important;"></ion-icon>@(Model.IsPrivate? "Set as public" : "Set as private")
+                        </button>
+                    </form>
+                    <hr/>
+                    <button type="button" onclick="openPostDeletePrompt('@Model.Id')"  class="delete-post-btn hover:!bg-red-50 custom-change-color rounded-[20px]" style="color: #ffffff;">
+                        <ion-icon class="text-xl custom-change-color" name="trash-bin-outline" style="color:inherit;"></ion-icon> Delete post
+                    </button>
+                }
+            </div>
+        </div>
+    </div>
+    @* Post content *@
+    <a asp-controller="Home" asp-action="Details" asp-route-postId="@Model.Id">
+        <div class="sm:px4 p-2 pt-0 w-full custom-bg-dark">
+            <p class="font-normal" style="padding-left: 12px; color: #ffffff!important;">
+                @Model.Content
+            </p>
+        </div>
+    </a>
+    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+    {
+        <a href="@Model.ImageUrl" class="story-link" data-gallery="posts" data-src="@Model.ImageUrl" aria-label="open image">
+            <div class="relative w-full lg:h-96 h-full sm:px-4">
+                <img src="@Model.ImageUrl" class="sm:rounded-lg w-full h-full object-cover" loading="lazy" />
+            </div>
+        </a>
+    }
+    @* Icons *@
+    <div class="sm:p-4 p-2.5 flex items-center gap-16 text-xs font-semibold">
+        <div class="flex items-center gap-2 ">
+            <a class="button-icon custom-bg-dark">
+                <ion-icon class="text-lg" style="color:#ffffff!important;" name="chatbubble-ellipses-outline"></ion-icon>
+            </a>
+            <a href="#" style="color:#ffffff!important;">
+                @Model.Comments.Count
+            </a>
+        </div>
+        <div class="flex items-center gap-2">
+            <form asp-controller="Home" asp-action="TogglePostLike">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="postId" value="@Model.Id"/>
+                <button type="submit" class="button-icon like-button  @(Model.Likes.Any(u => u.UserId == loggedInUserId) ? "text-red-500" : "text-white") custom-bg-dark">
+                    <ion-icon class="text-lg" name="@(Model.Likes.Any(n => n.UserId == loggedInUserId) ? "heart" : "heart-outline")"></ion-icon>
+                </button>
+            </form>
+            <a href="#" style="color:#ffffff!important;">
+                @Model.Likes.Count
+            </a>
+        </div>
+
+        <div class="ml-auto"></div>
+        <div>
+            <form asp-controller="Home" asp-action="TogglePostBookmark">
+                <input type="hidden" name="postId" value="@Model.Id"/>
+                <button type="submit" class="button-icon bookmark-button ml-auto custom-bg-dark">
+                    <ion-icon class="text-lg" style="@(Model.Bookmarks.Any(n => n.UserId == loggedInUserId) ? "color:#90f2ad" : "color:#ffffff")!important;" name="@(Model.Bookmarks.Any(n => n.UserId == loggedInUserId) ? "bookmark" : "bookmark-outline")"></ion-icon>
+                </button>
+            </form>
+            @* <a href="#" style="color:#ffffff!important;"> *@
+            @*     @Model.Bookmarks.Count *@
+            @* </a> *@
+        </div>
+       
+    </div>
+    @if (showDetails)
+    {
+    @* Add comment *@
+    <div class="p-2.5 border-t custom-border-color font-normal space-y-3 relative">
+        @if (Model.Comments != null)
+        {
+           
+            var commentsQuery = showAllComments ? Model.Comments.OrderBy(n => n.CreatedAt) : Model.Comments.OrderBy(n => n.CreatedAt).TakeLast(3);
+            
+            foreach(var comment in commentsQuery)
+            {
+                TimeSpan timeSpanSincePostedComment = DateTime.UtcNow.Subtract(comment.CreatedAt);
+                string displayTimeComment = "";
+                if (timeSpanSincePostedComment.Days >= 365)
+                {
+                    displayTimeComment = $"{timeSpanSincePostedComment.Days / 365} y ago";
+                }
+                else if (timeSpanSincePostedComment.Days >= 30)
+                {
+                    displayTimeComment = $"{timeSpanSincePostedComment.Days / 30} m ago";
+                }
+                else if (timeSpanSincePostedComment.TotalDays >= 1)
+                {
+                    displayTimeComment = $"{timeSpanSincePostedComment.Days} d ago";
+                }
+                else if (timeSpanSincePostedComment.TotalHours >= 1)
+                {
+                    displayTimeComment = $"{timeSpanSincePostedComment.Hours} h ago";
+                }
+                else if (timeSpanSincePostedComment.TotalMinutes >= 1)
+                {
+                    displayTimeComment = $"{timeSpanSincePostedComment.Minutes} m ago";
+                }
+                else
+                {
+                    displayTimeComment = $"Just now";
+                }
+                var commenter = comment.User;
+                var commenterName = commenter?.FullName ?? "Unknown";
+                var commenterAvatar = !string.IsNullOrEmpty(commenter?.ProfilePictureUrl) ? commenter.ProfilePictureUrl : Url.Content("~/images/avatar/user.png");
+                <div class="flex items-start gap-3 relative bg-slate-800 rounded-[20px]">
+                    <a asp-controller="User" asp-action="Details" asp-route-userId="@comment.UserId" class="w-6 h-6 overflow-hidden rounded-full relative shrink-0 flex items-center justify-center" style="margin-top:6px;">
+                        <img src="@commenterAvatar" class="w-full h-full object-cover rounded-full shadow"/>
+                    </a>
+                    <div class="flex-1">
+                        <div class="flex justify-content-between">
+                            <a class="font-medium inline-block flex-grow" asp-controller="User" asp-action="Details" asp-route-userId="@comment.UserId" style="color: #ffffff!important;">@commenterName</a>
+                            <small class="text-xs text-gray-400" title="@comment.CreatedAt.ToLocalTime().ToString("HH:mm dd-MM-yyyy")" style="margin-right:9px;">@displayTimeComment</small>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <p class="mt-0.5" style="color:#ffffff!important;">
+                                @comment.Content
+                            </p>
+                            @if (comment.UserId == loggedInUserId)
+                            {
+                                <form asp-controller="Home" asp-action="RemovePostComment" class="remove-comment-form">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="commentId" value="@comment.Id"/>
+                                    <input type="hidden" name="postId" value="@comment.PostId"/>
+                                    <button type="submit" class="ml-2 hover:!bg-red-50 custom-change-color rounded-full" title="Delete" style="padding:0px; margin-bottom: 0px; color:#ffffff;">
+                                        <ion-icon name="trash-outline"></ion-icon>
+                                    </button>
+                                </form>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        @if (Model.Comments.Count > 3 && !showAllComments)
+        {
+            <div class="p1.5 custom-bg-dark" style="color: white!important;">
+                <a asp-controller="Home" asp-action="Details" asp-route-postId="@Model.Id">
+                    Show all comments
+                </a>
+            </div>
+        }
+    </div>
+    <form asp-controller="Home" asp-action="AddPostComment" class="add-comment-form">
+        @Html.AntiForgeryToken()
+        <div class="sm:px-4 sm:py-3 p-2.5 border-t border-gray-100 flex items-center gap-1">
+            <a asp-controller="User" asp-action="Details" asp-route-userId="@loggedInUserId" class="w-6 h-6 overflow-hidden rounded-full relative shrink-0 flex items-center justify-center">
+                <img src="@(string.IsNullOrEmpty(profilePictureUrl) ? Url.Content("~/images/avatar/user.png") : profilePictureUrl)" class="w-full h-full object-cover object-center rounded-full shadow"/>
+            </a>
+
+            <input type="hidden" name="postId" value="@Model.Id"/>
+            <div class="flex-1 relative overflow-hidden h-10">
+                <textarea name="content" placeholder="Write your reply" rows="1" class="w-full resize-none !bg-transparent rounded-full px-4 py-2 focus:!border-transparent focus:!ring-transparent" style="background-color: #40826d!important; margin-left:12px; width:98%;"></textarea>
+            </div>
+            <button type="submit" class="text-sm rounded-full py-1.5 px-3.5 bg-secondary custom-bg-dark bg-slate-900" style="color:#ffffff!important;">Comment</button>
+
+        </div>
+    </form>
+    }
+</div>
+
+<script type="module">
+document.addEventListener('DOMContentLoaded', () => {
+  const selector = 'a.story-link[data-gallery="posts"]';
+
+  function ensureStyle() {
+    if (document.getElementById('postSinglePreviewStyles')) return;
+    const css = `
+      /* overlay fills the visual viewport and respects safe areas */
+      #postSinglePreviewOverlay{
+        position:fixed;
+        inset:0;
+        height:100dvh;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        background:rgba(0,0,0,0.35);
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+        z-index:99999;
+        opacity:0;
+        pointer-events:none;
+        transition:opacity .18s ease;
+        padding: max(env(safe-area-inset-top), 12px) max(env(safe-area-inset-right), 12px) max(env(safe-area-inset-bottom), 12px) max(env(safe-area-inset-left), 12px);
+        box-sizing: border-box;
+      }
+      #postSinglePreviewOverlay.open{
+        opacity:1;
+        pointer-events:auto;
+      }
+
+      /* inner container now shrink-wraps the image instead of spanning nearly full width */
+      #postSinglePreviewOverlay .preview-inner{
+        position:relative;
+        width: auto; /* <-- allow shrink-wrapping so side clicks hit the overlay */
+        max-width: calc(100vw - 24px);
+        max-height: calc(100dvh - 24px);
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        box-sizing: border-box;
+        overflow: hidden;
+        padding: 6px; /* small gap so clicking near image on the sides is treated as outside the image */
+      }
+
+      /* ensure image never exceeds the available space */
+      #postSinglePreviewOverlay img{
+        display:block;
+        width:auto;
+        height:auto;
+        max-width: calc(100vw - 48px);
+        max-height: calc(100dvh - 48px);
+        object-fit: contain;
+        border-radius:8px;
+        box-shadow:0 10px 40px rgba(0,0,0,0.6);
+        background:transparent;
+        cursor:zoom-out;
+      }
+
+      /* close button remains inside the safe area */
+      #postSinglePreviewOverlay .pg-close{
+        position:absolute;
+        top: calc(max(env(safe-area-inset-top), 12px));
+        right: calc(max(env(safe-area-inset-right), 12px));
+        background:transparent;
+        border:0;
+        color:#fff;
+        font-size:28px;
+        line-height:1;
+        padding:6px;
+        cursor:pointer;
+        z-index:2;
+      }
+
+      /* ensure story link uses pointer cursor */
+      a.story-link { cursor: pointer; }
+
+      body.post-preview-open{overflow:hidden;}
+    `;
+    const s = document.createElement('style');
+    s.id = 'postSinglePreviewStyles';
+    s.textContent = css;
+    document.head.appendChild(s);
+  }
+
+  function createOverlay() {
+    let overlay = document.getElementById('postSinglePreviewOverlay');
+    if (overlay) return overlay;
+
+    overlay = document.createElement('div');
+    overlay.id = 'postSinglePreviewOverlay';
+    overlay.innerHTML = `
+      <div class="preview-inner" role="dialog" aria-modal="true">
+        <button class="pg-close" aria-label="close">&times;</button>
+        <img alt="preview image" />
+      </div>
+    `;
+    document.body.appendChild(overlay);
+
+    const btn = overlay.querySelector('.pg-close');
+    const img = overlay.querySelector('img');
+
+    btn.addEventListener('click', close);
+
+    // clicking the dimmed background (overlay itself) closes the preview
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) close();
+    });
+
+    // clicking the image will also close (keeps simple UX); remove if undesired
+    img.addEventListener('click', close);
+
+    document.addEventListener('keydown', (e) => {
+      if (!overlay.classList.contains('open')) return;
+      if (e.key === 'Escape') close();
+    });
+
+    return overlay;
+  }
+
+  function openPreview(src, alt) {
+    const overlay = createOverlay();
+    const img = overlay.querySelector('img');
+    img.src = '';
+    img.alt = alt || 'image preview';
+
+    const tmp = new Image();
+    tmp.onload = () => {
+      // CSS ensures the image is constrained to the visible viewport
+      img.src = tmp.src;
+    };
+    tmp.src = src;
+
+    overlay.classList.add('open');
+    document.body.classList.add('post-preview-open');
+  }
+
+  function close() {
+    const overlay = document.getElementById('postSinglePreviewOverlay');
+    if (!overlay) return;
+    overlay.classList.remove('open');
+    document.body.classList.remove('post-preview-open');
+    setTimeout(() => {
+      const img = overlay.querySelector('img');
+      if (img) img.src = '';
+    }, 200);
+  }
+
+  function attachListeners() {
+    const anchors = Array.from(document.querySelectorAll(selector));
+    anchors.forEach(a => {
+      if (a._singlePreviewAttached) return;
+      a._singlePreviewAttached = true;
+      const src = a.dataset.src || a.getAttribute('href') || '';
+      const alt = a.dataset.alt || '';
+      // set pointer cursor for clarity
+      a.style.cursor = 'pointer';
+      a.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        if (!src) return;
+        openPreview(src, alt);
+      });
+    });
+  }
+
+  ensureStyle();
+  attachListeners();
+
+  const feedContainer = document.querySelector('.post-highlight')?.parentElement || document.body;
+  const mo = new MutationObserver((mutations) => {
+    let added = false;
+    for (const m of mutations) {
+      if (m.addedNodes?.length) { added = true; break; }
+    }
+    if (added) attachListeners();
+  });
+  mo.observe(feedContainer, { childList: true, subtree: true });
+});
+</script>

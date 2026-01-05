@@ -1,0 +1,19 @@
+@model List<Hashtag>
+<div class="flex items-baseline justify-between text-black" style="padding-bottom:12px;">
+    <h3 class="font-bold text-base" style="color:white!important;">Trends</h3>
+</div>
+<hr/>
+<div class="space-y-3.5 capitalize text-xs font-normal mt-5 mb-2 text-gray-600">
+    @foreach(var hashtag in Model)
+    {
+        @if (hashtag.Count == 0) { continue; }
+        <a>
+            <div class="flex items-center gap-3 p">
+                <div class="flex-1">
+                    <h2 class="font-semibold text-black" style="color:white!important;">@hashtag.Name</h2>
+                    <div class="m-0.5 text-gray-400 mb-2">@hashtag.Count</div>
+                </div>
+            </div>  
+        </a>
+    }
+</div>

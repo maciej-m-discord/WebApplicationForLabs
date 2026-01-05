@@ -1,0 +1,57 @@
+@model PostVM;
+<div class="hidden lg:p-20" id="create-status" uk-modal="">
+    <div class="uk-modal-dialog tt relative overflow-hidden mx-auto bg-white shadow-xl rounded-lg bg-slate-800 w-full" style="width:60vw; max-width:1200px; max-height: 90vh;">
+        <div class="text-center py-4 border-b mb-0 bg-black">
+            <h2 class="text-sm font-medium text-black" style="color: #ffffff!important;">Create post</h2>
+            <button type="button" class="button-icon absolute top-0 right-0 m-2.5 uk-modal-close">
+                <svg fill="#FFFFFF" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+                     width="25px" height="25px" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve">
+                    <polygon points="335.188,154.188 256,233.375 176.812,154.188 154.188,176.812 233.375,256 154.188,335.188 176.812,357.812 
+	                    256,278.625 335.188,357.812 357.812,335.188 278.625,256 357.812,176.812 "/>
+                    <path d="M256,0C114.609,0,0,114.609,0,256s114.609,256,256,256s256-114.609,256-256S397.391,0,256,0z M256,472
+	                    c-119.297,0-216-96.703-216-216S136.703,40,256,40s216,96.703,216,216S375.297,472,256,472z"/>
+                </svg>
+            </button>
+        </div>
+        <form asp-controller="Home" asp-action="CreatePost" enctype="multipart/form-data">
+            <div class="mt-3 p-2 flex flex-row">
+                <textarea class="w-full !text-black bg-slate-700 !border-transparent focus:!border-transparent focus:!ring-transparent !font-normal !text-xl" name="content" asp-for="@Model.Content" rows="12" placeholder="Share your thoughts" style="color:#ffffff!important;"></textarea>
+                <div id="imagePreviewContainer" class="hidden w-full h-full" style="max-width:50%; max-height: 60vh; overflow:hidden;">
+                    <img id="imagePreview" src="#" class="w-full h-auto rounded"/>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 text-sm py-2 px-4 font-medium flex-wrap">
+                <input id="imageUpload" type="file" class="hidden" name="image" accept="image/png, image/jpeg"/>
+                <button type="button" id="imageUploadBtn" class="flex items-center gap-1.5 bg-teal-100/60 text-teal-600 rounded-full py-1 px-2 border-2 border-teal-100">
+                    <ion-icon name="image" class="text-base"></ion-icon> Attach
+                </button>
+            </div>
+            <div class="p-5 flex justify-between items-center">
+                <div class="absolute right-2.5 bottom-3">
+                    <button type="submit" class="button bg-slate-700 text-white py-2 px-12 text-[14px]">Post</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    document.getElementById('imageUploadBtn').addEventListener('click',  ()=> {
+        document.getElementById('imageUpload').click();
+    })
+    document.getElementById('imageUpload').addEventListener('change', (event)=>{
+        const file = event.target.files[0];
+        const imagePreview = document.getElementById('imagePreview');
+        const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+        
+        if(file) {
+            const reader = new FileReader();
+            imagePreviewContainer.classList.remove('hidden');
+            reader.onload = (e) => {
+                imagePreview.src = e.target.result.toString();
+            }
+            reader.readAsDataURL(file);
+        } else {
+            imagePreviewContainer.classList.add('hidden')
+        }
+    })
+</script>

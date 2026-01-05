@@ -1,0 +1,117 @@
+
+@model MutualVm;
+<main id="site__main" class="2xl:ml-[--w-side] xl:ml-[--w-side-sm] p-2.5 h-[calc(100vh-var(--m-top))] mt-[--m-top] ">
+    <div class="max-w-[1065px] mx-auto" style="max-width: 1600px;">
+        <div class=" grid grid-cols-3 gap-4">
+        @if (Model.FollowsSent.Count > 0)
+        {
+            <div>
+                <div class="flex items-center justify-between my-3">
+                    <div>
+                        <h2 class="text-lg white font-semibold text-base">Followed users </h2>
+                        <p class="font-normal text-sm text-gray-400 leading-6">people you're following.</p>
+                    </div>
+                </div>
+
+                <div class="grid gap-2">
+                    @foreach (var followed in Model.FollowsSent)
+                    {
+                        <div class="flex md:items-center space-x-4 p-4 rounded-md box bg-slate-800">
+
+                            <a class="w-14 h-14 flex-shrink-0 rounded-lg relative overflow-hidden" asp-controller="User" asp-action="Details" asp-route-userId="@followed.Receiver.Id">
+                                <img src="@(string.IsNullOrEmpty(followed.Receiver.ProfilePictureUrl) ? Url.Content("~/images/avatar/user.png") : followed.Receiver.ProfilePictureUrl)" alt="Avatar" class="w-full h-full object-cover">
+                            </a>
+
+                            <div class="flex-1">
+                                <a class="text-base font-semibold white capitalize" asp-controller="User" asp-action="Details" asp-route-userId="@followed.Receiver.Id">
+                                    @followed.Receiver.FullName
+                                </a>
+                            </div>
+                            <form asp-controller="Follower" asp-action="Unfollow">
+                                <input type="hidden" name="followId" value="@followed.Id"/>
+                                <button type="submit" class="button white gap-1 max-md:!hidden bg-red-600 custom-bg-dark">
+                                    <ion-icon name="remove-circle-outline" class="text-xl -ml-1"></ion-icon>
+                                    Unfollow
+                                </button>
+                            </form>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+        @if (Model.FollowsReceived.Count > 0)
+        {
+            <div>
+                <div class="flex items-center justify-between my-3">
+                    <div>
+                        <h2 class="text-lg white font-semibold text-base">Followers</h2>
+                        <p class="font-normal text-sm text-gray-400 leading-6">people who follow you.</p>
+                    </div>
+                </div>
+
+                <div class="grid gap-2">
+                    @foreach (var following in Model.FollowsReceived)
+                    {
+                        <div class="flex md:items-center space-x-4 p-4 rounded-md box" style="background-color: rgb(19,79,120);">
+
+                            <a class="w-14 h-14 flex-shrink-0 rounded-lg relative overflow-hidden" asp-controller="User" asp-action="Details" asp-route-userId="@following.Sender.Id">
+                                <img src="@(string.IsNullOrEmpty(following.Sender.ProfilePictureUrl) ? Url.Content("~/images/avatar/user.png") : following.Sender.ProfilePictureUrl)" alt="Avatar" class="w-full h-full object-cover">
+                            </a>
+
+                            <div class="flex-1">
+                                <a class="text-base font-semibold white capitalize" asp-controller="User" asp-action="Details" asp-route-userId="@following.Sender.Id">
+                                    @following.Sender.FullName
+                                </a>
+                            </div>
+                            <form asp-controller="Follower" asp-action="FollowBack">
+                                <input type="hidden" name="followId" value="@following.Id"/>
+                                <button type="submit" class="button white gap-1 max-md:!hidden bg-slate-700 custom-bg-dark">
+                                    <ion-icon name="add-circle-outline" class="text-xl -ml-1"></ion-icon>
+                                    Follow Back
+                                </button>
+                            </form>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+        @if (Model.Mutuals.Count > 0)
+        {
+            <div>
+                <div class="flex items-center justify-between my-3">
+                    <div>
+                        <h2 class="text-lg white font-semibold text-base">Mutuals</h2>
+                        <p class="font-normal text-sm text-gray-400 leading-6">people who both follow you and you follow.</p>
+                    </div>
+                </div>
+
+                <div class="grid gap-2">
+                    @foreach (var mutual in Model.Mutuals)
+                    { 
+                    var friend = mutual.SenderId == int.Parse(User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier)) ? mutual.Receiver : mutual.Sender;
+                        <div class="flex md:items-center space-x-4 p-4 rounded-md box bg-teal-600">
+
+                            <a class="w-14 h-14 flex-shrink-0 rounded-lg relative overflow-hidden" asp-controller="User" asp-action="Details" asp-route-userId="@friend.Id">
+                                <img src="@(string.IsNullOrEmpty(friend.ProfilePictureUrl) ? Url.Content("~/images/avatar/user.png") : friend.ProfilePictureUrl)" alt="Avatar" class="w-full h-full object-cover">
+                            </a>
+
+                            <div class="flex-1">
+                                <a class="text-base font-semibold white capitalize" asp-controller="User" asp-action="Details" asp-route-userId="@friend.Id">
+                                    @friend.FullName
+                                </a>
+                            </div>
+                            <form asp-controller="Follower" asp-action="Unfollow">
+                                <input type="hidden" name="followId" value="@mutual.FollowId"/>
+                                <button type="submit" class="button white gap-1 max-md:!hidden bg-red-600 custom-bg-dark">
+                                    <ion-icon name="remove-circle-outline" class="text-xl -ml-1"></ion-icon>
+                                    Unfollow
+                                </button>
+                            </form>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+        </div>
+    </div>
+</main>

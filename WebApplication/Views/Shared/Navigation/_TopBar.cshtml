@@ -1,0 +1,201 @@
+@using WebApplication.Data.Services
+@inject UserManager<User> UserManager
+@inject INotificationService NotificationService
+@{
+    var loggedInUser = await UserManager.GetUserAsync(User);
+    var userId = loggedInUser?.Id;
+    var userName = loggedInUser?.UserName ?? "Guest";
+    var fullName = loggedInUser?.FullName;
+    var profilePictureUrl = loggedInUser?.ProfilePictureUrl;
+    var notificationCount = 0;
+    if (userId != null)
+    {
+        notificationCount = await NotificationService.GetUnreadNotificationCountAsync(userId.Value);
+    }
+
+    var notificationGetCountUrl = Url.Action("GetCount", "Notification");
+    var notificationGetNotificationsUrl = Url.Action("GetNotifications", "Notification");
+    var notificationSetAsReadUrl = Url.Action("SetAsRead", "Notification");
+}
+<header class="z-[100] h-[--m-top] fixed top-0 left-0 w-full flex items-center bg-slate-200/70 sky-50 
+    backdrop-blur-xl border-b custom-border-color">
+    <div class="2xl:w-[--w-side] lg:w-[--w-side-sm]">
+        <div class="flex items-center gap-1">
+            <button uk-toggle="target: #site__sidebar ; cls :!-translate-x-0"
+                    class="flex items-center justify-center w-8 h-8 text-xl rounded-full hover:bg-gray-100 xl:hidden group"> 
+                <ion-icon name="menu-outline" class="text-2xl group-aria-expanded:hidden"></ion-icon>
+                <ion-icon name="close-outline" class="hidden text-2xl group-aria-expanded:block"></ion-icon>
+            </button>
+                
+            <div id="logo" class="flex items-center ml-4"></div>
+            <a class="flex items-center" asp-controller="Home" asp-action="Index">
+                <img src="~/images/logo.png" class="w-10 md:block hidden"/>
+                <span class="ml-2" style="color:#ffffff!important;">Web App</span>
+            </a>
+        </div>
+    </div>
+    <div class="flex-1 relative">
+        <div class="mx-auto flex items-center" style="width: 65vw;">
+            <form id="search--box" class="xl:w-[680px] sm:w-96 sm:relative rounded-xl overflow-hidden z-20
+                    max-md:hidden w-screen max-sm:fixed max-sm:top-2">
+                <ion-icon name="search" class="absolute left-4 top-1/2 -translate-y-1/2"></ion-icon>
+                <input type="text" name="query" placeholder="Search Posts, Friends..." class="w-full
+                        !pl-10 !font-normal h-12 !text-sm" style="background-color: #40826d; color: #ffffff !important;"/>
+            </form>
+                    
+            <div class="flex items-center sm:gap-4 gap-2 absolute right-5 top-1/2 -translate-y-1/2 white">
+            </div>
+        </div>
+                
+        <div class="max-w-[1220px] mx-auto flex items-center">
+            <div class="flex items-center sm:gap-4 gap-2 absolute right-5 top-1/2 -translate-y-1/2 white">
+                @* notification *@
+                <button type="button" class="sm:p-2 p-1 w-9 h-9 shrink-0 rounded-full relative @(notificationCount == 0 ? "" : "bg-white")" id="notificationsBtn">
+                    <ion-icon class="w-full h-full" name="@( notificationCount==0 ? "notifications-outline" : "notifications")" style="color:@(notificationCount == 0? "#40826d" : "#fd4444")"></ion-icon>
+                    <div class="absolute top-0 right-0 -m-1 @(notificationCount == 0 ? "" : "bg-red-600") text-white text-xs px-1 rounded-full" id="notificationsCount">@notificationCount</div>
+                </button>
+
+                <div class="hidden bg-slate-800 pr-1.5 rounded-lg drop-shadow-xl md:w-[520px] w-screen border2" uk-drop="offset:6;pos: bottom-right; mode: click; animate-out: true;">
+
+                    <div class="flex items-center justify-between gap-2 p-4 pb-2">
+                        <h3 class="font-bold text-xl white">Notifications</h3>
+                    </div>
+
+                    <div class="text-sm h-[400px] w-full overflow-y-auto pr-2 white">
+                        <div class="pl-2 p-1 text-sm font-normal white" id="notification-dropdown">
+                            No notifications...
+                        </div>
+                    </div>
+
+                </div>
+                <div class="sm:w-9 sm:h-9 w-9 h-9 overflow-hidden rounded-full relative cursor-pointer shrink-0flex items-center justify-center">
+                    <a asp-controller="User" asp-action="Details" asp-route-userId="@loggedInUser.Id" class="block w-full h-full">
+                        <img src="@(!string.IsNullOrEmpty(profilePictureUrl) ? profilePictureUrl : Url.Content("~/images/avatar/user.png"))" class="w-full h-full object-cover rounded-full shadow" alt="Profile picture"/>
+                    </a>
+                </div>
+                <div class="hidden custom-border-color bg-slate-800 rounded-lg drop-shadow-xl custom-border-color w-64 borde2" uk-drop="offset:6;pos: bottom-right;animate-out: true;">
+                    <a>
+                        <div class="p-2 py-5 flex items-center gap-4">
+                            <a asp-controller="User" asp-action="Details" asp-route-userId="@loggedInUser.Id" class="w-10 h-10 overflow-hidden rounded-full relative shrink-0 flex items-center justify-center">
+                                <img src="@(!string.IsNullOrEmpty(profilePictureUrl)? profilePictureUrl : Url.Content("~/images/avatar/user.png"))" class="w-full h-full object-cover object-center rounded-full shadow"/>
+                            </a>
+                            <div class="flex-1">
+                                <h4 class="text-sm font-medium" style="color: #ffffff!important;">@fullName</h4>
+                                <div class="text-sm mt-1 text-blue-600 font-light/70">@userName</div>
+                            </div>
+                        </div>
+                    </a>
+                    <hr/>
+                    <nav>
+                        <a asp-action="Index" asp-controller="Settings">
+                            <div class="flex items-center gap-2.5 custom-bg-dark p-2 px-2.5 rounded-md" style="color: #ffffff!important;">
+                                <ion-icon name="settings-outline" style="color: #ffffff!important;" class="text-lg"></ion-icon>
+                                My Account
+                            </div>
+                        </a>
+                        <hr/>
+                        <a asp-controller="Authentication" asp-action="Logout">
+                            <div class="flex items-center gap-2.5 custom-bg-dark p-2 px-2.5 rounded-md" style="color: #ffffff!important;">
+                                <ion-icon name="exit-outline" style="color: #ffffff!important;" class="text-lg"></ion-icon>
+                                Logout
+                            </div>
+                        </a>
+                    </nav>
+                </div>
+            </div>
+                    
+        </div>
+                
+    </div>
+</header>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/aspnet-signalr/1.0.27/signalr.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+    const notificationGetCountUrl = '@notificationGetCountUrl';
+    const notificationGetNotificationsUrl = '@notificationGetNotificationsUrl';
+    const notificationSetAsReadUrl = '@notificationSetAsReadUrl';
+
+    function updateNotificationBadgeStyle(count) {
+        const btn = document.getElementById('notificationsBtn');
+        const badge = document.getElementById('notificationsCount');
+        if (!btn || !badge) return;
+        const icon = btn.querySelector('ion-icon');
+        const n = Number(count) || 0;
+        badge.innerText = n;
+        if (n > 0) {
+            btn.classList.add('bg-white');
+            badge.classList.add('bg-red-600');
+            badge.classList.remove('hidden');
+            icon.setAttribute('name', 'notifications');
+            icon.style.color = '#fd4444';
+        } else {
+            btn.classList.remove('bg-white');
+            badge.classList.remove('bg-red-600');
+            badge.innerText = 0;
+            icon.setAttribute('name', 'notifications-outline');
+            icon.style.color = '#40826d';
+        }
+    }
+
+    async function refreshNotificationsCount() {
+        try {
+            const res = await fetch(notificationGetCountUrl, { method: 'GET', headers: { 'Accept': 'application/json' } });
+            if (!res.ok) throw new Error('Network response was not ok: ' + res.status);
+            const contentType = res.headers.get('content-type') || '';
+            let count = 0;
+            if (res.status === 204 || !contentType.includes('application/json')) {
+                const text = await res.text();
+                count = text ? Number(text) : 0;
+            } else {
+                count = await res.json();
+            }
+            updateNotificationBadgeStyle(count);
+        } catch (error) {
+            console.error("Error fetching notification count: ", error);
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        refreshNotificationsCount();
+
+        const btn = document.getElementById('notificationsBtn');
+        if (btn) {
+            btn.addEventListener('click', () => {
+                fetch(notificationGetNotificationsUrl)
+                    .then(response => response.text())
+                    .then(html => {
+                        const el = document.getElementById('notification-dropdown');
+                        if (el) el.innerHTML = html;
+                    })
+                    .catch(err => console.error("Error fetching notifications: ", err));
+            });
+        }
+
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/notificationHub")
+            .build();
+
+        connection.on("ReceiveNotification", (message) => {
+            const num = Number(message) || 0;
+            updateNotificationBadgeStyle(num);
+        });
+
+        connection.start()
+            .then(() => console.log("SignalR connected"))
+            .catch((err) => console.log("SignalR connection error: ", err));
+    });
+
+    function setAsRead(notificationId) {
+        console.log('Mark as read => notification => ', notificationId);
+        fetch(`${notificationSetAsReadUrl}?notificationId=${encodeURIComponent(notificationId)}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        })
+            .then(response => response.text())
+            .then(html => {
+                const el = document.getElementById('notification-dropdown');
+                if (el) el.innerHTML = html;
+                refreshNotificationsCount();
+            })
+            .catch(err => console.error("Error setting notification as read: ", err));
+    }
+</script>

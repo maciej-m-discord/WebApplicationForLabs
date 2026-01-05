@@ -1,0 +1,204 @@
+@model List<Post>
+<main id="site__main" class="2xl:ml-[--w-side] xl:ml-[--w-side-sm] p-2.5 h-[calc(100vh-var(--m-top))] mt-[--m-top]">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mx-auto">
+        @foreach (var post in Model)
+        {
+            TimeSpan timeSpanSincePosted = DateTime.UtcNow.Subtract(post.CreatedAt);
+            string displayTime = "";
+            if (timeSpanSincePosted.Days >= 365)
+            {
+                displayTime = $"{timeSpanSincePosted.Days / 365} y ago";
+            }
+            else if (timeSpanSincePosted.Days >= 30)
+            {
+                displayTime = $"{timeSpanSincePosted.Days / 30} m ago";
+            }
+            else if (timeSpanSincePosted.TotalDays >= 1)
+            {
+                displayTime = $"{timeSpanSincePosted.Days} d ago";
+            }
+            else if (timeSpanSincePosted.TotalHours >= 1)
+            {
+                displayTime = $"{timeSpanSincePosted.Hours} h ago";
+            }
+            else if (timeSpanSincePosted.TotalMinutes >= 1)
+            {
+                displayTime = $"{timeSpanSincePosted.Minutes} m ago";
+            }
+            else
+            {
+                displayTime = $"Just now";
+            }
+
+            <div class="rounded-xl shadow-sm text-sm font-medium bg-slate-800 h-full flex flex-col" style="outline:2px solid!important; outline-color:rgb(49,101,84) !important; ">
+                @* Post heading *@
+                <div class="flex gap-3 sm:p-4 p-2.5 text-sm font-medium rounded-xl">
+                    <a asp-controller="User" asp-action="Details" asp-route-userId="@post.UserId" class="w-9 h-9 overflow-hidden rounded-full flex items-center justify-center">
+                        <img src="@(string.IsNullOrEmpty(post.User.ProfilePictureUrl) ? Url.Content("#") : Url.Content(post.User.ProfilePictureUrl))" class="w-full h-full object-cover rounded-full shadow"/>
+                    </a>
+                    <div class="flex-1">
+                        <a asp-controller="User" asp-action="Details" asp-route-userId="@post.UserId">
+                            <h4 style="color:#FFFFFF!important;">@post.User.FullName</h4>
+                            <div class="text-xs text-gray-400" title="@post.CreatedAt.ToLocalTime().ToString("HH:mm dd-MM-yyyy")">@displayTime</div>
+                        </a>
+                    </div>
+                    <div class="flex -mr-1 space-x-2">
+                        <form asp-controller="Admin" asp-action="ApprovePost" class="inline">
+                            <input type="hidden" name="postId" value="@post.Id"/>
+                            <button type="submit" class="button-icon w-8 h-8 text-red-500 hover:text-red-700">
+                                <ion-icon class="text-xl" name="trash-bin-outline">
+                                </ion-icon>
+                            </button>
+                        </form>
+                        <form asp-controller="Admin" asp-action="RejectPost" class="inline">
+                            <input type="hidden" name="postId" value="@post.Id"/>
+                            <button class="button-icon w-8 h-8 text-green-500 hover:text-green-700">
+                                <ion-icon class="text-xl" name="checkmark-outline">
+                                </ion-icon>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                @* Post content *@
+                <a asp-controller="Home" asp-action="Details" asp-route-postId="@post.Id">
+                    <div class="sm:px4 p-2 pt-0 w-full flex-1 custom-bg-dark">
+                        <p class="font-normal" style="padding-left: 12px; color: #ffffff!important;">
+                            @post.Content
+                        </p>
+                    </div>
+                </a>
+                @if (!string.IsNullOrEmpty(post.ImageUrl))
+                {
+                    <a href="@post.ImageUrl" class="story-link" data-gallery="posts" data-src="@post.ImageUrl" aria-label="open image">
+                        <div class="relative w-full lg:h-96 h-full sm:px-4">
+                            <img src="@post.ImageUrl" class="sm:rounded-lg w-full h-full object-cover rounded-b-2xl" loading="lazy"/>
+                        </div>
+                    </a>
+                }
+            </div>
+        }
+    </div>
+</main>
+
+<partial name="Modals/_CreateStory" model="new StoryVM()"/>
+<partial name="Modals/_CreateStatus" model="new PostVM()"/>
+<partial name="Home/_PostDeletePrompt"/>
+
+<script>
+    // javascript
+    (function () {
+        // selector for post container (only images inside these will be previewable)
+        var POST_CONTAINER_SELECTOR = '.rounded-xl, .post, .post-card, article';
+        // selectors that indicate profile/avatar images to exclude
+        var AVATAR_ANCESTOR_SELECTORS = '.rounded-full, .avatar, .user-avatar, .profile-pic';
+
+        // Inject lightweight CSS for overlay and constrained image
+        var css = '\
+.post-image-preview-overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:9999;background:rgba(0,0,0,0.85)}\
+.pip-wrapper{position:relative;max-width:100%;max-height:100%;display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box}\
+.pip-image{max-width:calc(100vw - 48px);max-height:calc(100vh - 48px);width:auto;height:auto;object-fit:contain;border-radius:6px;box-shadow:0 6px 30px rgba(0,0,0,0.6);background:#111}\
+.pip-close{position:absolute;top:12px;right:12px;background:transparent;border:0;color:#fff;padding:8px;cursor:pointer;font-size:26px;opacity:0.95}\
+.pip-caption{position:absolute;left:50%;transform:translateX(-50%);bottom:16px;color:#ddd;font-size:14px;max-width:90%;text-align:center;line-height:1.2}';
+        var style = document.createElement('style');
+        style.appendChild(document.createTextNode(css));
+        document.head.appendChild(style);
+
+        // Create overlay DOM (single-image preview only)
+        var overlay = document.createElement('div');
+        overlay.className = 'post-image-preview-overlay';
+        overlay.innerHTML = '\
+    <div class="pip-wrapper" role="dialog" aria-modal="true">\
+      <button class="pip-close" aria-label="Close">&times;</button>\
+      <img class="pip-image" alt="" />\
+      <div class="pip-caption"></div>\
+    </div>';
+        document.body.appendChild(overlay);
+
+        var imgEl = overlay.querySelector('.pip-image');
+        var captionEl = overlay.querySelector('.pip-caption');
+        var btnClose = overlay.querySelector('.pip-close');
+
+        function findPostContainer(el) {
+            return el.closest(POST_CONTAINER_SELECTOR);
+        }
+
+        function isAvatarImage(img) {
+            // exclude images that are clearly avatars/profile pictures by ancestor or explicit classes
+            if (img.closest(AVATAR_ANCESTOR_SELECTORS)) return true;
+            if (img.classList && (img.classList.contains('avatar') || img.classList.contains('rounded-full') || img.classList.contains('user-avatar') || img.classList.contains('profile-pic'))) return true;
+            // exclude very small images (likely icons/avatars). threshold can be adjusted
+            try {
+                var w = img.naturalWidth || img.width;
+                var h = img.naturalHeight || img.height;
+                if ((w && w <= 64 && h && h <= 64) || (Math.min(w || Infinity, h || Infinity) <= 48)) return true;
+            } catch (err) {
+                /* ignore read errors */
+            }
+            return false;
+        }
+
+        function getImageSource(img) {
+            return img.dataset.full || img.dataset.src || img.src || '';
+        }
+
+        function openForImage(img) {
+            var src = getImageSource(img);
+            if (!src) return;
+            // set src and caption, ensure it fits the viewport via CSS
+            imgEl.src = src;
+            imgEl.alt = img.alt || img.title || '';
+            captionEl.textContent = img.dataset.caption || img.alt || '';
+            overlay.style.display = 'flex';
+            // prevent page scroll while open
+            document.documentElement.style.overflow = 'hidden';
+            // ensure focus for accessibility
+            btnClose.focus && btnClose.focus();
+        }
+
+        function close() {
+            overlay.style.display = 'none';
+            document.documentElement.style.overflow = '';
+            // clear image src to release memory if large
+            try { imgEl.src = ''; } catch (e) { /* noop */ }
+        }
+
+        // Delegated click handler: open only the single clicked image inside a post container,
+        // and exclude avatars/profile pictures.
+        document.addEventListener('click', function (e) {
+            var t = e.target;
+            if (!(t instanceof HTMLImageElement)) return;
+
+            // only images inside configured post containers are eligible
+            var container = findPostContainer(t);
+            if (!container) return;
+
+            // exclude avatar/profile images
+            if (isAvatarImage(t)) return;
+
+            // if image is inside a link, prevent navigation and use the image's full source
+            var anchor = t.closest('a');
+            if (anchor) e.preventDefault();
+
+            openForImage(t);
+        }, false);
+
+        // Close handlers: button, background click, Escape key
+        btnClose.addEventListener('click', function (e) { e.stopPropagation(); close(); }, false);
+        overlay.addEventListener('click', function (e) {
+            // close only if clicked on overlay background (not on the image or caption)
+            if (e.target === overlay) close();
+        }, false);
+
+        document.addEventListener('keydown', function (e) {
+            if (overlay.style.display === '' || overlay.style.display === 'none') return;
+            if (e.key === 'Escape') { e.preventDefault(); close(); }
+        }, false);
+
+        // Expose a minimal API for testing/debug
+        window.__postImagePreview = {
+            openForImage: function (img) { if (img instanceof HTMLImageElement && !isAvatarImage(img)) openForImage(img); },
+            close: close
+        };
+    })();
+</script>
+

@@ -1,0 +1,204 @@
+@inject UserManager<User> UserManagerTwo
+@model GetUserProfileVm
+@using System.Security.Claims
+@using Microsoft.IdentityModel.Tokens
+@{
+var currentUserId = UserManagerTwo.GetUserId(User);
+var isOwner = !string.IsNullOrEmpty(currentUserId) && Model.User?.Id.ToString() == currentUserId;
+}
+
+<main id="site__main" class="2xl:ml-[--w-side] xl:ml-[--w-side-sm] p-2.5 h-[calc(100vh-var(--m-top))] mt-[--m-top] ">
+    <div class="mx-auto max-lg:-m-2.5" style="max-width: 80vw;">
+        <div class="bg-slate-800 shadow lg:rounded-b-2xl lg:-mt-10">
+            <div class="relative overflow-hidden w-full lg:h-8 h-8"></div>
+            @if (isOwner)
+            {
+                @* Combined form: allows selecting both profile and cover and submitting both together *@
+                <form asp-controller="Settings" asp-action="UpdateImages" method="post" enctype="multipart/form-data" id="profileCoverForm" class="relative">
+                    @Html.AntiForgeryToken()
+                    @* Cover placeholder and cover upload control *@
+                    <div class="relative">
+                        <input type="file" id="coverImageUpload" name="CoverPictureImage" class="hidden" accept="image/png, image/jpeg"/>
+                        <!-- fixed responsive banner: height clamps between 160px and 360px, scales with viewport (25vh) -->
+                        <div id="coverPreviewWrap" style="background-color: slategray; width:100%; height:clamp(160px,25vh,360px); overflow:hidden; display:flex; align-items:center; justify-content:center;">
+                            <img id="coverPreview" class="cursor-pointer" src="@(string.IsNullOrEmpty(@Model.User.BannerImageUrl) ? Url.Content("~/images/placeholders/postimg.jpg") : @Model.User.BannerImageUrl)" alt="cover" style="width:100%; height:100%; object-fit:cover;"/>
+                        </div>
+                        <label for="coverImageUpload" class="absolute top-3 cursor-pointer" style="right: 2.5rem;">
+                            <ion-icon name="add-outline" class="text-2xl white"></ion-icon>
+                        </label>
+                        <label for="coverImageUpload" class="absolute top-3 cursor-pointer" style="right: 1.15rem;">
+                            <ion-icon name="image-outline" class="text-2xl white"></ion-icon>
+                        </label>
+                        @* Submit button moved into the cover container and positioned top-right *@
+                    </div>
+                    @* Profile picture + uploader overlay (positioned over avatar) *@
+                    <div class="p-3 flex flex-row items-center relative overflow-visible">
+                        <div class="flex-shrink-0 mr-4 relative" style="width:112px; height:112px; margin-top:-56px; margin-left:15px; overflow:visible;">
+                            <div id="profileAvatarWrap" class="relative overflow-visible rounded-full md:border-[6px] custom-border-color w-full h-full flex items-center justify-center" style="width:112px; height:112px; margin-top: -53px; margin-left: -5px;">
+                                <img id="profilePreview" src="@(string.IsNullOrEmpty(Model.User.ProfilePictureUrl) ? Url.Content("~/images/avatar/user.png") : Model.User.ProfilePictureUrl)" class="w-full h-full object-cover rounded-full shadow z-20 cursor-pointer" alt="profile"/>
+                                <input type="file" id="profileImageUpload" name="ProfilePictureImage" class="hidden" accept="image/png, image/jpeg"/>
+                                <label for="profileImageUpload" class="p-0.5 rounded-full bg-slate-800 custom-border-color absolute -bottom-2 -right-2 cursor-pointer z-30" title="Change profile picture">
+                                    <svg width="30px" height="30px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M22 11.5V14.6C22 16.8402 22 17.9603 21.564 18.816C21.1805 19.5686 20.5686 20.1805 19.816 20.564C18.9603 21 17.8402 21 15.6 21H8.4C6.15979 21 5.03969 21 4.18404 20.564C3.43139 20.1805 2.81947 19.5686 2.43597 18.816C2 17.9603 2 16.8402 2 14.6V9.4C2 7.15979 2 6.03969 2.43597 5.18404C2.81947 4.43139 3.43139 3.81947 4.18404 3.43597C5.03969 3 6.15979 3 8.4 3H12.5M19 8V2M16 5H22M16 12C16 14.2091 14.2091 16 12 16C9.79086 16 8 14.2091 8 12C8 9.79086 9.79086 8 12 8C14.2091 8 16 9.79086 16 12Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="md:text-3xl text-base font-bold white" style="margin-left: 20px;">@Model.User.FullName</h3>
+                            <p class="mt-2 text-gray-400">@(string.IsNullOrEmpty(Model.User.UserName) ? "no username" : Model.User.UserName)</p>
+                            <p class="mt-4" style="margin-left:-120px;">
+                                <a href="#" class="px-2 custom-hover-blue">@Model.Followers.Count Followers</a>
+                                <a href="#" class="px-2 custom-hover-blue">@Model.Follows.Count Following</a>
+                                <a href="#" class="px-2 custom-hover-blue">@Model.User.Posts.Count Posts</a>
+                            </p>
+                            <p class="mt-2 ml-3 pb-2" style="margin-left:-112px;">@(string.IsNullOrEmpty(Model.User.Bio) ? "No bio" : Model.User.Bio)</p>
+                        </div>
+                        <button id="submitProfileCover" type="submit" class="inline-block bg-slate-700 text-white rounded-xl px-4 py-2 shadow custom-bg-dark w-auto opacity-50 cursor-not-allowed absolute top-3 right-3 z-40 hidden" disabled>
+                            Save changes
+                        </button>
+                    </div>
+                    @* bottom-right submit removed (button lives in cover container now) *@
+                </form>
+            }
+            else
+            {
+                @* Cover placeholder and cover upload control *@
+                <div class="relative">
+                    <!-- fixed responsive banner: height clamps between 160px and 360px, scales with viewport (25vh) -->
+                    <div id="coverPreviewWrap" style="background-color: slategray; width:100%; height:clamp(160px,25vh,360px); overflow:hidden; display:flex; align-items:center; justify-content:center;">
+                        <img id="coverPreview" src="@(string.IsNullOrEmpty(@Model.User.BannerImageUrl) ? Url.Content("~/images/placeholders/postimg.jpg") : @Model.User.BannerImageUrl)" alt="cover" style="width:100%; height:100%; object-fit:cover;"/>
+                    </div>
+                </div>
+
+                @* Profile picture + uploader overlay (positioned over avatar) *@
+                <div class="p-3 flex flex-row items-center relative overflow-visible">
+                    <div class="flex-shrink-0 mr-4 relative" style="width:112px; height:112px; margin-top:-56px; margin-left:15px; overflow:visible;">
+                        <div id="profileAvatarWrap" class="relative overflow-visible rounded-full md:border-[6px] custom-border-color w-full h-full flex items-center justify-center" style="width:112px; height:112px; margin-top: -53px; margin-left: -5px;">
+                            <img id="profilePreview" src="@(string.IsNullOrEmpty(Model.User.ProfilePictureUrl) ? Url.Content("~/images/avatar/user.png") : Model.User.ProfilePictureUrl)" class="w-full h-full object-cover rounded-full shadow z-20" alt="profile"/>
+                        </div>
+                    </div>
+
+                    <div class="flex-1">
+                        <h3 class="md:text-3xl text-base font-bold white" style="margin-left: 20px;">@Model.User.FullName</h3>
+                        <p class="mt-2 text-gray-400">@(string.IsNullOrEmpty(Model.User.UserName) ? "no username" : Model.User.UserName)</p>
+                        <p class="mt-4" style="margin-left:-120px;">
+                            <a href="#" class="px-2 custom-hover-blue">@Model.Followers.Count Followers</a>
+                            <a href="#" class="px-2 custom-hover-blue">@Model.Follows.Count Following</a>
+                            <a href="#" class="px-2 custom-hover-blue">@Model.User.Posts.Count Posts</a>
+                        </p>
+                        <p class="mt-2 ml-3 pb-2" style="margin-left:-112px;">@(string.IsNullOrEmpty(Model.User.Bio) ? "No bio" : Model.User.Bio)</p>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="flex 2xl:gap-12 gap-10 mt-8 max-lg:flex-col" id="js-oversized">
+            <div class="flex-1 xl:space-y-6 space-y-3">
+                @foreach (var post in Model.Posts)
+                {
+                    <partial name="Home/_Posts" model=post view-data='new ViewDataDictionary(ViewData){{"ShowAllComment", false}, {"ShowDetails", false}}'/>
+                }
+            </div>
+            <div class="lg:w-[400px]">
+                <div class="lg:space-y-4 lg:pb-8 max-lg:grid sm:grid-cols-2 max-lg:gap-6" uk-sticky="media: 1024; end: #js-oversized; offset: 80">
+                    <div class="box p-5 px-6 bg-slate-800">
+                        <div class="flex items-center justify-between white">
+                            <h3 class="font-bold text-lg white">Friends
+                                <span class="block text-sm text-gray400 mt-0 font-normal mb-5">@Model.Mutuals.Count friends</span>
+                                
+                            </h3>
+                           
+                        </div>
+                        <hr/>
+                        @foreach (var mutual in Model.Mutuals)
+                        {
+                            var friend = (mutual.SenderId == Model.User.Id)? mutual.Receiver : mutual.Sender;
+                            <div class="grid grid-cols-3 gap-2 gap-y-5 text-center text-sm mt-4 mb-2 white">
+                                <div class="relative w-full aspect-square rounded-lg overflow-hidden">
+                                    <a asp-controller="User" asp-action="Details" asp-route-userId="@friend.Id">
+                                        <img class="object-cover w-full h-full inset-0" src="@(string.IsNullOrEmpty(friend.ProfilePictureUrl) ? Url.Content("~/images/avatar/user.png") : friend.ProfilePictureUrl)"/>
+                                    </a>
+                                </div>
+                                <div class="mt-2 line-clamp-1">@friend.FullName</div>
+                            </div>
+                        }
+                    </div> 
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<partial name="Modals/_CreateStory" model="new StoryVM()"/>
+<partial name="Modals/_CreateStatus" model="new PostVM()"/>
+<partial name="Home/_PostDeletePrompt"/>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var coverInput = document.getElementById('coverImageUpload');
+        var profileInput = document.getElementById('profileImageUpload');
+        var coverPreview = document.getElementById('coverPreview');
+        var profilePreview = document.getElementById('profilePreview');
+        var submitBtn = document.getElementById('submitProfileCover');
+        var hasChanges = { cover: false, profile: false };
+
+        function enableIfChanged() {
+            if (!submitBtn) return;
+            if (hasChanges.cover || hasChanges.profile) {
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                submitBtn.classList.remove('hidden');
+            } else {
+                submitBtn.disabled = true;
+                submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                submitBtn.classList.add('hidden');
+            }
+        }
+
+        function previewFile(input, imgEl, changeFlagKey) {
+            var file = input.files && input.files[0];
+            if (!file) {
+                hasChanges[changeFlagKey] = false;
+                enableIfChanged();
+                return;
+            }
+            if (!file.type || file.type.indexOf('image') === -1) {
+                console.warn('Not an image:', file.type);
+                return;
+            }
+            var url = URL.createObjectURL(file);
+            imgEl.src = url;
+            imgEl.style.objectFit = 'cover';
+            hasChanges[changeFlagKey] = true;
+            enableIfChanged();
+            imgEl.onload = function () {
+                URL.revokeObjectURL(url);
+                imgEl.style.objectFit = 'cover';
+            };
+        }
+
+        if (coverInput) {
+            coverInput.addEventListener('change', function () {
+                previewFile(coverInput, coverPreview, 'cover');
+            }, false);
+        }
+        if (profileInput) {
+            profileInput.addEventListener('change', function () {
+                previewFile(profileInput, profilePreview, 'profile');
+            }, false);
+        }
+
+        // If user clicks the preview image itself, open the file picker
+        if (coverPreview) {
+            coverPreview.addEventListener('click', function () {
+                if (coverInput) coverInput.click();
+            }, false);
+        }
+        if (profilePreview) {
+            profilePreview.addEventListener('click', function () {
+                if (profileInput) profileInput.click();
+            }, false);
+        }
+
+        enableIfChanged();
+    });
+    
+</script>
