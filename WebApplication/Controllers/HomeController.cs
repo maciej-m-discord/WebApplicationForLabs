@@ -38,11 +38,10 @@ public class HomeController(ILogger<HomeController> logger, IPostService postSer
     [HttpPost]
     public async Task<IActionResult> CreatePost(PostVM post)
     {
-        // if (!ModelState.IsValid)
-        // {
-        //     TempData["ErrorMessage"] = "Invalid post data. Please try again.";
-        //     return RedirectToAction("Index");
-        // }
+        if (!ModelState.IsValid)
+        {
+            return RedirectToAction("Index", "Home", post);
+        }
         int? userId = GetUserId();
         if(userId == null) return RedirectToLogin();
         var imageUploadPath = await _fileService.UploadImageAsync(post.Image, ImageFileType.PostImage);
