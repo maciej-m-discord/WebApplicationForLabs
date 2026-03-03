@@ -74,11 +74,10 @@ var app = builder.Build();
  {
      var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
      await dbContext.Database.MigrateAsync();
-     await DbInitializer.SeedAsync(dbContext);
      
      var userManager =scope.ServiceProvider.GetRequiredService<UserManager<User>>();
      var roleManager =scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<int>>>();
-     await DbInitializer.SeedUsersAndRolesAsync(userManager,roleManager);
+     await DbInitializer.SeedAsync(dbContext, userManager,  roleManager);
  }
 
 

@@ -147,6 +147,28 @@ form > button.icon-link > ion-icon, button.delete-post-btn > ion-icon {
 .bg-slate-800 {
     background-color: #18322a;
 }
+.main-page-width {
+    width:65vw;
+}
+
+.main-page-change-order {
+    .two{order:1;}
+    .one{order:2;}
+}
+
+@media(max-width:1023px) {
+    .main-page-width {
+        width: 95vw;
+    }
+    
+    .main-page-change-order {
+        display:inline-block;
+    }
+}
+
+.bg-viridian-800{
+    background-color: rgb(24 50 42 / 0.8);
+}
 
 .bg-slate-800\/50 {
     background-color: rgb(30 41 59 / 0.5);

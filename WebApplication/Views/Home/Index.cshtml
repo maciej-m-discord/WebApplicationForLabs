@@ -1,29 +1,8 @@
 ﻿@model List<Post>
 <main id="site__main" class="2xl:ml-[--w-side] xl:ml-[--w-side-sm] p-2.5 h-[calc(100vh-var(--m-top))] mt-[--m-top] ">
-    <div class="lg:flex 2xl:gap-16 gap-12 mx-auto" id="js-oversized">
-        <div class="mx-auto flex-column align-items-center" style="width: 65vw;">
-            
-            @await Component.InvokeAsync("Stories")
-            
-            <div class="mx-auto flex-1 xl:space-y-6 space-y-3" style="padding-left: 12px;">
-                <div id="posts-container" class="space-y-4">
-                @if (Model.Count == 0)
-                {
-                    <div class="bg-slate-700/20 rounded-xl text-gray-800 text-center shadow-sm md:p-4 p-2 space-y-4 text-sm font-medium border1 custom-border-color text-white" style="width:100%;">
-                        Currently, there are no posts available.
-                    </div>
-                }
-                else
-                {
-                    @foreach (var post in Model)
-                    {
-                        <partial name="Home/_Posts" model=post view-data='new ViewDataDictionary(ViewData) { { "ShowAllComment", false } }'/>
-                    }
-                }
-                </div>
-            </div>
-        </div>
-        <div class="flex-1">
+    <div class="lg:flex 2xl:gap-16 w-full gap-12 mx-auto main-page-change-order" id="js-oversized">
+        
+        <div class="pb-8 one">
             <div class="lg:space-y-4 lg:pb-8 max-lg:grid sm:grid-cols-2 max-lg:gap-6" style="padding-top:40px;">
                 <div class="box p-5 px-6 bg-slate-800 border1 custom-border-color">
                     @await Component.InvokeAsync("SuggestedFollows")
@@ -33,6 +12,29 @@
                 </div>
             </div>
         </div>
+        <div class="flex-column align-items-center main-page-width two">
+
+            @await Component.InvokeAsync("Stories")
+
+            <div class="mx-auto flex-1 xl:space-y-6 space-y-3" style="padding-left: 12px;">
+                <div id="posts-container" class="space-y-4">
+                    @if (Model.Count == 0)
+                    {
+                        <div class="bg-slate-700/20 rounded-xl text-gray-800 text-center shadow-sm md:p-4 p-2 space-y-4 text-sm font-medium border1 custom-border-color text-white" style="width:100%;">
+                            Currently, there are no posts available.
+                        </div>
+                    }
+                    else
+                    {
+                        @foreach (var post in Model)
+                        {
+                            <partial name="Home/_Posts" model=post view-data='new ViewDataDictionary(ViewData) { { "ShowAllComment", false } }'/>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+
     </div>
 </main>
 

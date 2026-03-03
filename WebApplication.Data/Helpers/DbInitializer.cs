@@ -6,9 +6,9 @@ namespace WebApplication.Data.Helpers;
 
 public static class DbInitializer
 {
-    public static async Task SeedUsersAndRolesAsync(UserManager<User> userManager, RoleManager<IdentityRole<int>> roleManager)
+    public static async Task SeedAsync(AppDbContext appDbContext, UserManager<User> userManager, RoleManager<IdentityRole<int>> roleManager)
     {
-        if (!roleManager.Roles.Any())
+        if (!appDbContext.Users.Any() && !appDbContext.Posts.Any() && !roleManager.Roles.Any())
         {
             foreach (var role in AppRoles.AllRoles)
             {
@@ -18,50 +18,54 @@ public static class DbInitializer
                 }
             }
             
-            //Users with roles
-            if (!userManager.Users.Any(n => !string.IsNullOrEmpty(n.Email)))
+            User newUser = new User();
+            IdentityResult result;
+            
+            var userPassword = "1234";
+            newUser = new User()
             {
-                var userPassword = "P@ssword1";
-                var newUser = new User()
-                {
-                    UserName = "maciej.mniszak",
-                    Email = "maciej.m1421@gmail.com",
-                    FullName = "Maciej Mniszak",
-                    ProfilePictureUrl =
-                        "https://cdn.bsky.app/img/avatar/plain/did:plc:qo4ymftjk57mgr6rjsfgydiw/bafkreiab3obpnwmezkzw6xjkctwomb7ipdjnvy7o274qq6suf6vsxbfteq@jpeg",
-                    EmailConfirmed = true
-                };
-                
-                var result = await userManager.CreateAsync(newUser, userPassword);
-                if (result.Succeeded)
-                    await userManager.AddToRoleAsync(newUser, AppRoles.User);  
-                
-                var newAdmin = new User()
-                {
-                    UserName = "klaus.colossus",
-                    Email = "pieczysty1421@gmail.com",
-                    FullName = "Klaus Colossus",
-                    ProfilePictureUrl =
-                        "https://cdn.bsky.app/img/avatar/plain/did:plc:qo4ymftjk57mgr6rjsfgydiw/bafkreiab3obpnwmezkzw6xjkctwomb7ipdjnvy7o274qq6suf6vsxbfteq@jpeg",
-                    EmailConfirmed = true
-                };
-                
-                var resultNewAdmin = await userManager.CreateAsync(newAdmin, userPassword);
-                if (resultNewAdmin.Succeeded)
-                    await userManager.AddToRoleAsync(newAdmin, AppRoles.Admin);  
-            }
-        }
-    }
-    public static async Task SeedAsync(AppDbContext appDbContext)
-    {
-        if (!appDbContext.Users.Any() && !appDbContext.Posts.Any())
-        {
-            var newUser = new User()
+                UserName = "maciej.mniszak",
+                Email = "maciej.m1421@gmail.com",
+                FullName = "Maciej Mniszak",
+                ProfilePictureUrl =
+                    "https://cdn.bsky.app/img/avatar/plain/did:plc:qo4ymftjk57mgr6rjsfgydiw/bafkreiab3obpnwmezkzw6xjkctwomb7ipdjnvy7o274qq6suf6vsxbfteq@jpeg",
+                EmailConfirmed = true
+            };
+            
+            result = await userManager.CreateAsync(newUser, userPassword);
+            if (result.Succeeded)
+                await userManager.AddToRoleAsync(newUser, AppRoles.User);
+            result = IdentityResult.Failed();
+            
+            userPassword="Smoki1421.!";
+            newUser = new User()
+            {
+                UserName = "klaus.colossus",
+                Email = "pieczysty1421@gmail.com",
+                FullName = "Klaus Colossus",
+                ProfilePictureUrl =
+                    "https://cdn.bsky.app/img/avatar/plain/did:plc:qo4ymftjk57mgr6rjsfgydiw/bafkreiab3obpnwmezkzw6xjkctwomb7ipdjnvy7o274qq6suf6vsxbfteq@jpeg",
+                EmailConfirmed = true
+            };
+            
+            result = await userManager.CreateAsync(newUser, userPassword);
+            if (result.Succeeded)
+                await userManager.AddToRoleAsync(newUser, AppRoles.Admin);  
+            result = IdentityResult.Failed();
+            
+            newUser = new User()
             {
                 FullName = "Discord Colossus",
+                Email = "pieczyste1421@gmail.com",
                 ProfilePictureUrl =
-                    "https://cdn.bsky.app/img/avatar/plain/did:plc:qo4ymftjk57mgr6rjsfgydiw/bafkreiab3obpnwmezkzw6xjkctwomb7ipdjnvy7o274qq6suf6vsxbfteq@jpeg"
+                    "https://cdn.bsky.app/img/avatar/plain/did:plc:qo4ymftjk57mgr6rjsfgydiw/bafkreiab3obpnwmezkzw6xjkctwomb7ipdjnvy7o274qq6suf6vsxbfteq@jpeg",
+                UserName = "klaus.colossus",
+                EmailConfirmed = true
             };
+            result = await userManager.CreateAsync(newUser, userPassword);
+            if (result.Succeeded)
+                await userManager.AddToRoleAsync(newUser, AppRoles.User); 
+            
             await appDbContext.Users.AddAsync(newUser);
             await appDbContext.SaveChangesAsync();
 

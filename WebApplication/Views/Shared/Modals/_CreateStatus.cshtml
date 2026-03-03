@@ -15,20 +15,20 @@
         </div>
         <form asp-controller="Home" asp-action="CreatePost" enctype="multipart/form-data">
             <div class="mt-3 p-2 flex flex-row">
-                <textarea class="w-full !text-black bg-slate-700 !border-transparent focus:!border-transparent focus:!ring-transparent !font-normal !text-xl" name="content" asp-for="@Model.Content" rows="12" placeholder="Share your thoughts" style="color:#ffffff!important;"></textarea>
+                <textarea class="w-full !text-black bg-slate-700 !border-transparent focus:!border-transparent focus:!ring-transparent !font-normal !text-xl" name="content" id="content" asp-for="@Model.Content" rows="12" placeholder="Share your thoughts" style="color:#ffffff!important;"></textarea>
                 <div id="imagePreviewContainer" class="hidden w-full h-full" style="max-width:50%; max-height: 60vh; overflow:hidden;">
                     <img id="imagePreview" src="#" class="w-full h-auto rounded"/>
                 </div>
             </div>
             <div class="flex items-center gap-2 text-sm py-2 px-4 font-medium flex-wrap">
                 <input id="imageUpload" type="file" class="hidden" name="image" accept="image/png, image/jpeg"/>
-                <button type="button" id="imageUploadBtn" class="flex items-center gap-1.5 bg-teal-100/60 text-teal-600 rounded-full py-1 px-2 border-2 border-teal-100">
-                    <ion-icon name="image" class="text-base"></ion-icon> Attach
+                <button type="button" id="imageUploadBtn" class="flex items-center gap-1.5 bg-slate-700 white rounded-full py-1 px-2 border-2 custom-border-color">
+                    <ion-icon name="image" class="text-base text-2xl"></ion-icon> Attach
                 </button>
             </div>
             <div class="p-5 flex justify-between items-center">
                 <div class="absolute right-2.5 bottom-3">
-                    <button type="submit" class="button bg-slate-700 text-white py-2 px-12 text-[14px]">Post</button>
+                    <button id="Submit Button" type="submit" class="button bg-slate-700 text-white py-2 px-12 text-[14px]">Post</button>
                 </div>
             </div>
         </form>
@@ -54,4 +54,15 @@
             imagePreviewContainer.classList.add('hidden')
         }
     })
+    const button = document.getElementById("Submit Button");
+    const contentArea = document.getElementById("content");
+    button.classList.add('hidden');
+    contentArea.addEventListener("input", () =>{
+        if(contentArea.value.trim().length > 0){
+            button.classList.remove('hidden');
+        } else {
+            button.classList.add('hidden');
+        }
+        }
+    )
 </script>

@@ -1,7 +1,6 @@
-<div id="site__sidebar" class="fixed top-0 left-0 z-[99] pt-[--m-top] overflow-hidden transition-transform xl:duration-500 
-max-xl:w-full max-xl:-translate-x-full bg-slate-800">
-    <div class="p-2 shadow-sm 2xl:w-72 sm:w-64 w-[80%] h-[calc(100vh-64px)] relative z-30 max-lg:border-r 
-    dark:max-xl:!bg-slate-700 dark:border-slate-700" style="height: 100vh;">
+<div id="site__sidebar" class="fixed top-0 left-0 z-[99] pt-[--m-top] overflow-hidden transition-transform xl:duration-500 max-xl:-translate-x-full bg-slate-800">
+    <div class="p-2 shadow-sm 2xl:w-72 sm:w-64 h-[calc(100vh-64px)] relative z-30 custom-border-color
+     bg-viridian-800 dark:border-slate-700" style="height: 100vh; border-right-width: 1px;">
         <div class="pr-4" data-simplebar>
             <nav id="side">
                 <ul>
@@ -32,15 +31,16 @@ max-xl:w-full max-xl:-translate-x-full bg-slate-800">
                         <div class="py-2.5 text-white" style="margin-right:15px;">
                             New post
                         </div>
+                        <div asp-validation-summary="All"></div>
                     </div>
 
-                    <div class="cursor-pointer hover:bg-opacity-80 p-1 px-1.5 rounded-xl transition-all bg-teal-100/60 hover:bg-sky-100" uk-toggle="target: #create-status">
-                        <svg fill="#40826d" width="25px" height="25px" viewBox="0 0 36 36" version="1.1" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                            <title>picture-solid</title>
-                            <path d="M32,4H4A2,2,0,0,0,2,6V30a2,2,0,0,0,2,2H32a2,2,0,0,0,2-2V6A2,2,0,0,0,32,4ZM8.92,8a3,3,0,1,1-3,3A3,3,0,0,1,8.92,8ZM6,27V22.9l6-6.08a1,1,0,0,1,1.41,0L16,19.35,8.32,27Zm24,0H11.15l6.23-6.23,5.4-5.4a1,1,0,0,1,1.41,0L30,21.18Z" class="clr-i-solid clr-i-solid-path-1"></path>
-                            <rect x="0" y="0" width="36" height="36" fill-opacity="0"/>
-                        </svg>
-                    </div>
+                    @* <div class="cursor-pointer hover:bg-opacity-80 p-1 px-1.5 rounded-xl transition-all bg-teal-100/60 hover:bg-sky-100" uk-toggle="target: #create-status"> *@
+                    @*     <svg fill="#40826d" width="25px" height="25px" viewBox="0 0 36 36" version="1.1" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"> *@
+                    @*         <title>picture-solid</title> *@
+                    @*         <path d="M32,4H4A2,2,0,0,0,2,6V30a2,2,0,0,0,2,2H32a2,2,0,0,0,2-2V6A2,2,0,0,0,32,4ZM8.92,8a3,3,0,1,1-3,3A3,3,0,0,1,8.92,8ZM6,27V22.9l6-6.08a1,1,0,0,1,1.41,0L16,19.35,8.32,27Zm24,0H11.15l6.23-6.23,5.4-5.4a1,1,0,0,1,1.41,0L30,21.18Z" class="clr-i-solid clr-i-solid-path-1"></path> *@
+                    @*         <rect x="0" y="0" width="36" height="36" fill-opacity="0"/> *@
+                    @*     </svg> *@
+                    @* </div> *@
                 </div>
             </div>
             <nav id="side" class="font-medium text-sm text-black border-t pt-3 mt-2">
@@ -58,7 +58,7 @@ max-xl:w-full max-xl:-translate-x-full bg-slate-800">
             </nav>
         </div>
     </div>
-    <div id="site__sidebar__overlay" class="absolute top-0 left-0 z-20 w-screen h-screen xl:hidden backdrop-blur-sm"
+    <div id="site__sidebar__overlay" class="absolute top-0 left-3 z-20 xl:hidden backdrop-blur-sm"
          uk-toggle="target:#site__sidebar ; cls :!-translate-x-0">
         
     </div>
