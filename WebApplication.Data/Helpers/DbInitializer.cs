@@ -24,11 +24,11 @@ public static class DbInitializer
             var userPassword = "1234";
             newUser = new User()
             {
-                UserName = "maciej.mniszak",
-                Email = "maciej.m1421@gmail.com",
-                FullName = "Maciej Mniszak",
+                UserName = "john.smith",
+                Email = "john.smith@gmail.com",
+                FullName = "John Smith",
                 ProfilePictureUrl =
-                    "https://cdn.bsky.app/img/avatar/plain/did:plc:qo4ymftjk57mgr6rjsfgydiw/bafkreiab3obpnwmezkzw6xjkctwomb7ipdjnvy7o274qq6suf6vsxbfteq@jpeg",
+                    "https://images.unsplash.com/photo-1771749141777-85a499d85dc3?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
                 EmailConfirmed = true
             };
             
@@ -40,11 +40,11 @@ public static class DbInitializer
             userPassword="Smoki1421.!";
             newUser = new User()
             {
-                UserName = "klaus.colossus",
+                UserName = "site.admin",
                 Email = "pieczysty1421@gmail.com",
-                FullName = "Klaus Colossus",
+                FullName = "Maciej M",
                 ProfilePictureUrl =
-                    "https://cdn.bsky.app/img/avatar/plain/did:plc:qo4ymftjk57mgr6rjsfgydiw/bafkreiab3obpnwmezkzw6xjkctwomb7ipdjnvy7o274qq6suf6vsxbfteq@jpeg",
+                    "https://images.unsplash.com/photo-1771030669953-f9eb204d8aab?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
                 EmailConfirmed = true
             };
             
@@ -55,11 +55,11 @@ public static class DbInitializer
             
             newUser = new User()
             {
-                FullName = "Discord Colossus",
-                Email = "pieczyste1421@gmail.com",
+                FullName = "Joe Doe",
+                Email = "1234@gmail.com",
                 ProfilePictureUrl =
-                    "https://cdn.bsky.app/img/avatar/plain/did:plc:qo4ymftjk57mgr6rjsfgydiw/bafkreiab3obpnwmezkzw6xjkctwomb7ipdjnvy7o274qq6suf6vsxbfteq@jpeg",
-                UserName = "klaus.colossus",
+                    "https://images.unsplash.com/photo-1772415912163-bd5fe16b8ff0?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                UserName = "joe.doe",
                 EmailConfirmed = true
             };
             result = await userManager.CreateAsync(newUser, userPassword);
@@ -84,7 +84,7 @@ public static class DbInitializer
                 Content =
                     "This is going to be our first post which is being loaded from the Azure database and it has been created using our test user. This post has an image.",
                 ImageUrl =
-                    "https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/b603a563-3235-45b4-8b64-e6d2f6ddb27f/original=true,quality=90/114467364.jpeg",
+                    "https://images.unsplash.com/photo-1772211506168-1cbfcb361be8?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
                 NrOfReports = 0,
                 CreatedAt = DateTime.UtcNow,
                 DateUpdated = DateTime.UtcNow,
